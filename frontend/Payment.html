@@ -1,258 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Altius Academy | Student Payment</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Altius Academy | Student Payment</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Icons -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="layout.css">
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        /* ===== PAYMENT PAGE ===== */
-        .summary-card {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .summary-item {
-            background: #fff;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
-        }
-
-        .summary-item .label {
-            font-size: 13px;
-            color: #6b7280;
-        }
-
-        .summary-item .value {
-            font-size: 20px;
-            font-weight: 600;
-            margin-top: 6px;
-        }
-
-        .summary-item.highlight {
-            background: #450050;
-            color: white;
-        }
-
-        .outstanding-text {
-            color: #ffdddd;
-        }
-
-        /* ===== TABLE ===== */
-        .payment-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
-        }
-
-        .payment-table th,
-        .payment-table td {
-            padding: 14px;
-            text-align: center;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 14px;
-        }
-
-        .payment-table thead {
-            background: #450050;
-            color: white;
-        }
-
-        .status-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .status-badge.paid {
-            background: #22c55e;
-            color: white;
-        }
-
-        .status-badge.unpaid {
-            background: #ef4444;
-            color: white;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .disabled-btn {
-            background: #d1d5db !important;
-            cursor: not-allowed;
-        }
-
-        /* ===== MODAL ===== */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-        }
-
-        .modal.hidden {
-            display: none;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 18px;
-            width: 420px;
-        }
-
-        .modal-content h3 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .modal-row {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 16px;
-        }
-    </style>
+  <!-- Layout & Style -->
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <!-- ================= TOP BAR ================= -->
 <header class="topbar">
-    <div class="top-left">
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <a href="StaffHomepage.html" class="top-logo">
-            <img src="images/logo1.png">
-            <span>Altius Academy</span>
-        </a>
-    </div>
+  <div class="top-left">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <a href="StaffHomepage.html" class="top-logo">
+      <img src="images/logo1.png">
+      <span>Altius Academy</span>
+    </a>
+  </div>
 
-    <div class="top-right">
-        <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
-        <div class="user-dropdown" id="userDropdown">
-            <a href="#">My Profile</a>
-            <a href="#" onclick="logout()">Logout</a>
-        </div>
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="StaffHomepage.html">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
     </div>
+  </div>
 </header>
 
 <div class="layout">
 
 <!-- ================= SIDEBAR ================= -->
 <aside class="sidebar" id="sidebar">
-    <nav class="menu">
-        <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
-        <a href="StudentList.html" class="active"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
-        <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
-        <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
-        <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
-        <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
-        <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
-        <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
-    </nav>
+  <nav class="menu">
+    <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="StudentList.html" class="active"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+    <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+    <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+    <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+    <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+    <a href="report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+  </nav>
 </aside>
 
 <!-- ================= MAIN ================= -->
 <main class="main">
 
-<h2>Student Payment</h2>
+  <h1 class="page-title">Student Payment Details</h1>
 
-<!-- SUMMARY -->
-<div class="summary-card">
+  <!-- ================= SUMMARY ================= -->
+  <section class="summary-card">
     <div class="summary-item">
-        <div class="label">Student Name</div>
-        <div class="value" id="studentName">-</div>
+      <span class="label">Student Name</span>
+      <span id="studentName" class="value">-</span>
     </div>
-    <div class="summary-item">
-        <div class="label">Student ID</div>
-        <div class="value" id="studentId">-</div>
-    </div>
-    <div class="summary-item highlight">
-        <div class="label">Total Paid (RM)</div>
-        <div class="value" id="totalFee">0.00</div>
-    </div>
-    <div class="summary-item highlight">
-        <div class="label">Outstanding Fees (RM)</div>
-        <div class="value outstanding-text" id="outstandingFee">0.00</div>
-    </div>
-</div>
 
-<!-- TABLE -->
-<table class="payment-table">
-    <thead>
+    <div class="summary-item">
+      <span class="label">Student ID</span>
+      <span id="studentId" class="value">-</span>
+    </div>
+
+    <div class="summary-item highlight">
+      <span class="label">Total Paid (RM)</span>
+      <span id="totalFee" class="value">0.00</span>
+    </div>
+
+    <div class="summary-item highlight">
+      <span class="label">Outstanding Fees (RM)</span>
+      <span id="outstandingFee" class="value outstanding-text">0.00</span>
+    </div>
+  </section>
+
+  <!-- ================= ENROLLMENTS ================= -->
+  <section class="table-section">
+    <h2>Enrollments & Payments</h2>
+
+    <table class="payment-table">
+      <thead>
         <tr>
-            <th>Enrollment ID</th>
-            <th>Package</th>
-            <th>Fee (RM)</th>
-            <th>Status</th>
-            <th>Action</th>
+          <th>Enrollment ID</th>
+          <th>Package</th>
+          <th>Fee (RM)</th>
+          <th>Payment Status</th>
+          <th>Action</th>
         </tr>
-    </thead>
-    <tbody id="EnrollmentTable"></tbody>
-</table>
+      </thead>
+      <tbody id="EnrollmentTable"></tbody>
+    </table>
 
-<!-- MODAL -->
-<div id="paymentModal" class="modal hidden">
-    <div class="modal-content">
-        <h3>Add Payment</h3>
+    <p id="emptyMessage" class="empty-message" hidden>
+      No enrollments found for this student.
+    </p>
+  </section>
 
-        <div class="modal-row">
-            <label>Payment Date</label>
-            <input type="date" id="paymentDate">
-        </div>
+  <!-- ================= ADD PAYMENT ================= -->
+  <section class="add-payment-card">
+    <h2>Add Payment</h2>
 
-        <div class="modal-row">
-            <label>Amount (RM)</label>
-            <input type="number" id="paymentAmount" step="0.01">
-        </div>
+    <div class="payment-form">
+      <div class="form-row">
+        <label>Payment Date</label>
+        <input type="date" id="paymentDate">
+      </div>
 
-        <div class="form-actions">
-            <button class="button" onclick="submitPayment()">Save</button>
-            <button class="button secondary" onclick="closePaymentModal()">Cancel</button>
-        </div>
+      <div class="form-row">
+        <label>Add Amount (RM)</label>
+        <input type="number" id="paymentAmount" step="0.01">
+      </div>
+
+      <div class="payment-actions">
+        <button class="button" onclick="submitPayment()">Save</button>
+        <button class="button secondary" onclick="cancelPayment()">Cancel</button>
+      </div>
     </div>
-</div>
+  </section>
 
 </main>
 </div>
 
 <!-- ================= SCRIPT ================= -->
 <script>
+/* ================= UI ================= */
 function toggleSidebar(){
-    document.getElementById("sidebar").classList.toggle("collapsed");
+  document.getElementById("sidebar").classList.toggle("collapsed");
 }
-function toggleUserMenu(){
-    const d = document.getElementById("userDropdown");
-    d.style.display = d.style.display === "block" ? "none" : "block";
-}
-function logout(){
-    localStorage.removeItem("staff");
-    location.href = "login.html";
-}
-</script>
 
-<!-- 🔥 KEEP YOUR EXISTING PAYMENT JS BELOW THIS LINE 🔥 -->
-<!-- (Aku tak ubah logic backend kau) -->
+function toggleUserMenu(){
+  const m = document.getElementById("userDropdown");
+  m.style.display = m.style.display === "block" ? "none" : "block";
+}
+
+function logout(){
+  localStorage.removeItem("staff");
+  location.href = "login.html";
+}
+
+/* ================= DATA ================= */
+const studentId = new URLSearchParams(location.search).get("studentId");
+let currentEnrollmentId = null;
+
+/* ================= LOAD DATA ================= */
+async function loadStudentData(){
+  try {
+    const summaryRes = await fetch(
+      `http://localhost:3000/payment/student-payment-summary?studentId=${studentId}`
+    );
+    const summary = await summaryRes.json();
+
+    studentName.textContent = summary.STUDENTNAME || "-";
+    studentIdSpan = document.getElementById("studentId");
+    studentIdSpan.textContent = studentId;
+    totalFee.textContent = parseFloat(summary.TOTALPAID || 0).toFixed(2);
+
+    const enrollRes = await fetch(
+      `http://localhost:3000/payment/enrollments?studentId=${studentId}`
+    );
+    const data = await enrollRes.json();
+
+    const tbody = EnrollmentTable;
+    tbody.innerHTML = "";
+
+    let outstanding = 0;
+
+    if(!data || data.length === 0){
+      emptyMessage.hidden = false;
+      return;
+    }
+    emptyMessage.hidden = true;
+
+    data.forEach(e => {
+      const isPaid = e.PAYMENT_STATUS === "Paid";
+      if(!isPaid){
+        outstanding += parseFloat(e.PACKAGE_FEE || 0);
+      }
+
+      tbody.innerHTML += `
+        <tr>
+          <td>${e.ENROLL_ID}</td>
+          <td>${e.PACKAGE_NAME}</td>
+          <td>${parseFloat(e.PACKAGE_FEE).toFixed(2)}</td>
+          <td>
+            <span class="status-badge ${isPaid ? "paid" : "unpaid"}">
+              ${isPaid ? "Paid" : "Unpaid"}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="button ${isPaid ? "disabled-btn" : ""}"
+                ${isPaid ? "disabled" : ""}
+                onclick="preparePayment('${e.ENROLL_ID}', ${e.PACKAGE_FEE})">
+                Add Payment
+              </button>
+              <button class="button secondary ${!isPaid ? "disabled-btn" : ""}"
+                ${!isPaid ? "disabled" : ""}
+                onclick="viewReceipt('${e.ENROLL_ID}')">
+                View Receipt
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    outstandingFee.textContent = outstanding.toFixed(2);
+
+  } catch(err){
+    alert("Failed to load data");
+    console.error(err);
+  }
+}
+
+/* ================= PAYMENT ================= */
+function preparePayment(enrollId, fee){
+  currentEnrollmentId = enrollId;
+  paymentAmount.value = parseFloat(fee).toFixed(2);
+  paymentDate.valueAsDate = new Date();
+}
+
+async function submitPayment(){
+  if(!currentEnrollmentId){
+    alert("Select enrollment first");
+    return;
+  }
+
+  await fetch("http://localhost:3000/payment", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      enrollmentId: currentEnrollmentId,
+      paymentDate: paymentDate.value,
+      totalFees: paymentAmount.value
+    })
+  });
+
+  alert("Payment added");
+  loadStudentData();
+}
+
+function cancelPayment(){
+  paymentDate.value = "";
+  paymentAmount.value = "";
+  currentEnrollmentId = null;
+}
+
+function viewReceipt(id){
+  location.href = `Receipt.html?enrollId=${id}`;
+}
+
+/* ================= INIT ================= */
+document.addEventListener("DOMContentLoaded", loadStudentData);
+</script>
 
 </body>
 </html>
