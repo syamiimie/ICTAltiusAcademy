@@ -57,14 +57,22 @@ exports.getDashboardStats = async (req, res) => {
     /* =========================
        FINANCIAL SNAPSHOT
        ========================= */
-    const financialStats = await conn.execute(`
-      SELECT
-        COUNT(*) AS TOTAL_ENROLLMENTS,
-        SUM(pck.PACKAGE_FEE - NVL(pay.Total_Fees,0)) AS OUTSTANDING_FEES
-      FROM ENROLLMENT e
-      JOIN PACKAGE pck ON e.PACKAGE_ID = pck.PACKAGE_ID
-      LEFT JOIN PAYMENT pay ON e.PAYMENT_ID = pay.PAYMENT_ID
-    `);
+ const financialStats = await conn.execute(`
+  SELECT
+    COUNT(*) AS TOTAL_ENROLLMENTS,
+    SUM(
+      CASE
+        WHEN NVL(pay.TOTAL_FEES, 0) < pck.PACKAGE_FEE THEN 1
+        ELSE 0
+      END
+    ) AS UNPAID_ENROLLMENTS,
+    SUM(
+      pck.PACKAGE_FEE - NVL(pay.TOTAL_FEES, 0)
+    ) AS OUTSTANDING_FEES
+  FROM ENROLLMENT e
+  JOIN PACKAGE pck ON e.PACKAGE_ID = pck.PACKAGE_ID
+  LEFT JOIN PAYMENT pay ON e.PAYMENT_ID = pay.PAYMENT_ID
+`);
 
     res.json({
       students: studentStats.rows[0],
