@@ -90,6 +90,17 @@
 </main>
 
 <script>
+/* ===== UI ===== */
+function toggleSidebar(){ sidebar.classList.toggle("collapsed"); }
+function toggleUserMenu(){
+    userDropdown.style.display =
+        userDropdown.style.display === "block" ? "none" : "block";
+}
+function logout(){
+    localStorage.removeItem("staff");
+    location.href = "login.html";
+}
+
 const enrollId = new URLSearchParams(window.location.search).get("enrollId");
 
 if (!enrollId) {
