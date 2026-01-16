@@ -48,21 +48,11 @@
       padding: 10px;
       margin: 6px 0;
       border-radius: 8px;
-      color: white;
+      color: black;
       font-size: 14px;
       line-height: 1.4;
       box-shadow: 0 4px 8px rgba(0,0,0,0.25);
     }
-
-    /* ================= COLOR THEME ================= */
-    .class-green   { background:#4ADE80; }
-    .class-blue    { background:#38BDF8; }
-    .class-pink    { background:#D946EF; }
-    .class-orange  { background:#F97316; }
-    .class-yellow  { background:#EAB308; }
-    .class-teal    { background:#22C55E; }
-    .class-red     { background:#EF4444; }
-    .class-purple  { background:#A855F7; }
 
     hr {
       border: 0;
@@ -100,7 +90,7 @@
   <nav class="menu">
     <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
     <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
-    <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="ClassList.html" class="active"><i class="fa-solid fa-school"></i><span>Class</span></a>
     <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
     <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
     <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
@@ -133,6 +123,7 @@
 </main>
 </div>
 
+<!-- ================= SCRIPT ================= -->
 <script>
 /* ================= UI ================= */
 function toggleSidebar(){
@@ -152,75 +143,70 @@ document.addEventListener("click", e => {
 
 function logout(){
   localStorage.removeItem("staff");
-  location.href="login.html";
+  location.href = "login.html";
 }
 
-/* ================= COLOR MAPPING ================= */
-function getClassColor(subject){
-  subject = subject.toLowerCase();
-
-  if(subject.includes("sejarah")) return "class-green";
-  if(subject.includes("math")) return "class-blue";
-  if(subject.includes("biology")) return "class-teal";
-  if(subject.includes("science")) return "class-orange";
-  if(subject.includes("english")) return "class-green";
-  if(subject.includes("geography")) return "class-pink";
-  if(subject.includes("additional")) return "class-purple";
-
-  return "class-yellow";
+/* ================= RANDOM COLOR ================= */
+function getRandomColor() {
+  const hue = Math.floor(Math.random() * 360);
+  return `hsl(${hue}, 70%, 60%)`;
 }
 
 /* ================= LOAD SCHEDULE ================= */
 fetch("http://localhost:3000/classes/schedule")
-.then(res => res.json())
-.then(data => {
+  .then(res => res.json())
+  .then(data => {
 
-  const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-  const times = [...new Set(data.map(c => c.CLASS_TIME))].sort();
+    const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+    const times = [...new Set(data.map(c => c.CLASS_TIME))].sort();
 
-  const tbody = document.getElementById("timetableBody");
-  tbody.innerHTML = "";
+    const tbody = document.getElementById("timetableBody");
+    tbody.innerHTML = "";
 
-  times.forEach(time => {
-    const tr = document.createElement("tr");
+    times.forEach(time => {
+      const tr = document.createElement("tr");
 
-    const timeTd = document.createElement("td");
-    timeTd.className = "time-slot";
-    timeTd.textContent = time;
-    tr.appendChild(timeTd);
+      const timeTd = document.createElement("td");
+      timeTd.className = "time-slot";
+      timeTd.textContent = time;
+      tr.appendChild(timeTd);
 
-    days.forEach(day => {
-      const td = document.createElement("td");
+      days.forEach(day => {
+        const td = document.createElement("td");
 
-      const classes = data.filter(
-        c => c.CLASS_TIME === time && c.CLASS_DAY === day
-      );
+        const classes = data.filter(
+          c => c.CLASS_TIME === time && c.CLASS_DAY === day
+        );
 
-      classes.forEach((c, i) => {
-        const box = document.createElement("div");
-        box.className = "class-box";
-        box.classList.add(getClassColor(c.SUBJECT_NAME));
+        classes.forEach((c, i) => {
+          const box = document.createElement("div");
+          box.className = "class-box";
+          box.style.backgroundColor = getRandomColor();
 
-        box.innerHTML = `
-          <strong>${c.CLASS_NAME}</strong><br>
-          ${c.SUBJECT_NAME}<br>
-          ${c.TEACHER_NAME}<br>
-          ${c.PREREQUISITES || "None"}
-        `;
+          box.innerHTML = `
+            <strong>${c.CLASS_ID} - ${c.CLASS_NAME}</strong><br>
+            ${c.SUBJECT_NAME}<br>
+            ${c.TEACHER_NAME}<br>
+            ${c.PREREQUISITES || "None"}
+          `;
 
-        td.appendChild(box);
+          td.appendChild(box);
 
-        if(i < classes.length - 1){
-          td.appendChild(document.createElement("hr"));
-        }
+          if(i < classes.length - 1){
+            td.appendChild(document.createElement("hr"));
+          }
+        });
+
+        tr.appendChild(td);
       });
 
-      tr.appendChild(td);
+      tbody.appendChild(tr);
     });
-
-    tbody.appendChild(tr);
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Failed to load class schedule");
   });
-});
 </script>
 
 </body>
