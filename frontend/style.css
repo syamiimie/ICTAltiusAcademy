@@ -528,6 +528,22 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 24px;
 }
+/* Full-width dashboard card */
+.dashboard-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+/* Smaller pie chart */
+.chart-wrapper {
+  max-width: 260px;      /* controls size */
+  margin: 0 auto;        /* center horizontally */
+}
+
+.chart-wrapper canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+
 
 /* Card putih */
 .dashboard-card {

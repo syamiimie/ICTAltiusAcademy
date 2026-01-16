@@ -12,6 +12,9 @@
   <!-- CSS -->
   <link rel="stylesheet" href="layout.css">
   <link rel="stylesheet" href="style.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -153,37 +156,45 @@
       </div>
     </div>
 
-    <!-- FINANCIAL SNAPSHOT -->
-    <div class="dashboard-card">
-      <div class="icon-badge icon-red">
-        <i class="fa-solid fa-wallet"></i>
-      </div>
+<!-- FINANCIAL SNAPSHOT -->
+<div class="dashboard-card">
+  <div class="icon-badge icon-red">
+    <i class="fa-solid fa-wallet"></i>
+  </div>
 
-      <h3>Financial Snapshot</h3>
+  <h3>Financial Snapshot</h3>
 
-      <div class="stat-row">
-        <span class="label">Total Enrollments</span>
-        <span class="value" id="totalEnrollments">0</span>
-      </div>
+  <div class="stat-row">
+    <span class="label">Total Enrollments</span>
+    <span class="value" id="totalEnrollments">0</span>
+  </div>
 
-      <div class="stat-row">
-        <span class="label">Unpaid Enrollments</span>
-        <span class="value" id="unpaidEnrollments">0</span>
-      </div>
+  <div class="stat-row">
+    <span class="label">Unpaid Enrollments</span>
+    <span class="value" id="unpaidEnrollments">0</span>
+  </div>
 
-      <div class="stat-row danger">
-        <span class="label">Outstanding Fees</span>
-        <span class="value" id="outstandingAmount">RM 0.00</span>
-      </div>
-    </div>
+  <div class="stat-row">
+    <span class="label">Payment Completion Rate</span>
+    <span class="value" id="paymentCompletion">0%</span>
+  </div>
 
   </div>
+  <div class="dashboard-card full-width">
+
+  <h3>Payment Completion Rate</h3>
+
+  <div class="chart-wrapper">
+    <canvas id="completionChart"></canvas>
+  </div>
+</div>
+
 
 </main>
 </div>
 
-<!-- ================= SCRIPT ================= -->
 <script>
+/* ================= BASIC UI ================= */
 function toggleSidebar(){
   document.getElementById("sidebar").classList.toggle("collapsed");
 }
@@ -199,41 +210,93 @@ document.addEventListener("click", e => {
   }
 });
 
+/* ================= GET DOM ELEMENTS ================= */
+const staffName = document.getElementById("staffName");
+const staffEmail = document.getElementById("staffEmail");
+const staffPhone = document.getElementById("staffPhone");
+const staffUsername = document.getElementById("staffUsername");
+
+const totalStudents = document.getElementById("totalStudents");
+const totalPrimary = document.getElementById("totalPrimary");
+const totalSecondary = document.getElementById("totalSecondary");
+
+const totalClasses = document.getElementById("totalClasses");
+const avgAttendance = document.getElementById("avgAttendance");
+const lowAttendance = document.getElementById("lowAttendance");
+
+const totalEnrollments = document.getElementById("totalEnrollments");
+const unpaidEnrollments = document.getElementById("unpaidEnrollments");
+const paymentCompletion = document.getElementById("paymentCompletion");
+
+/* ================= AUTH CHECK ================= */
 const staff = JSON.parse(localStorage.getItem("staff"));
 if (!staff) {
   alert("Please login first");
   location.href = "login.html";
 }
 
-/* STAFF PROFILE */
+/* ================= STAFF PROFILE ================= */
 fetch(`http://localhost:3000/staff/${staff.STAFF_ID}`)
   .then(res => res.json())
   .then(s => {
-    localStorage.setItem("staff", JSON.stringify(s));
     staffName.innerText = s.STAFF_NAME || "-";
     staffEmail.innerText = s.STAFF_EMAIL || "-";
     staffPhone.innerText = s.STAFF_PHONENUM || "-";
     staffUsername.innerText = s.STAFF_USERNAME ? "@" + s.STAFF_USERNAME : "-";
   });
 
-/* DASHBOARD DATA */
+/* ================= COMPLETION PIE CHART ================= */
+let completionChart;
+
+function renderCompletionChart(rate){
+  const ctx = document.getElementById("completionChart");
+  if (!ctx) return;
+
+  if (completionChart) completionChart.destroy();
+
+  completionChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Completed", "Incomplete"],
+      datasets: [{
+        data: [rate, 100 - rate],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom" }
+      }
+    }
+  });
+}
+
+/* ================= DASHBOARD DATA ================= */
 fetch("http://localhost:3000/dashboard")
   .then(res => res.json())
   .then(d => {
-    totalStudents.innerText = d.students?.TOTAL_STUDENTS || 0;
-    totalPrimary.innerText = d.students?.PRIMARY_STUDENTS || 0;
-    totalSecondary.innerText = d.students?.SECONDARY_STUDENTS || 0;
 
-    totalClasses.innerText = d.classes || 0;
-    avgAttendance.innerText = d.avgAttendance || "--";
-    lowAttendance.innerText = d.lowAttendanceStudents || 0;
+    totalStudents.innerText = d.students?.TOTAL_STUDENTS ?? 0;
+    totalPrimary.innerText = d.students?.PRIMARY_STUDENTS ?? 0;
+    totalSecondary.innerText = d.students?.SECONDARY_STUDENTS ?? 0;
 
-    totalEnrollments.innerText = d.financial?.TOTAL_ENROLLMENTS || 0;
-    unpaidEnrollments.innerText = d.financial?.UNPAID_ENROLLMENTS || 0;
-    outstandingAmount.innerText =
-      "RM " + Number(d.financial?.OUTSTANDING_FEES || 0).toFixed(2);
-  });
+    totalClasses.innerText = d.classes ?? 0;
+    avgAttendance.innerText = d.avgAttendance ?? "--";
+    lowAttendance.innerText = d.lowAttendanceStudents ?? 0;
 
+    totalEnrollments.innerText = d.financial?.TOTAL_ENROLLMENTS ?? 0;
+    unpaidEnrollments.innerText = d.financial?.UNPAID_ENROLLMENTS ?? 0;
+
+    const rate = d.financial?.PAYMENT_COMPLETION_RATE ?? 0;
+    paymentCompletion.innerText = rate + "%";
+
+    // ✅ THIS WAS MISSING
+    renderCompletionChart(rate);
+  })
+  .catch(err => console.error("Dashboard error:", err));
+
+/* ================= LOGOUT ================= */
 function logout(){
   if(confirm("Logout from system?")){
     localStorage.removeItem("staff");
@@ -241,6 +304,7 @@ function logout(){
   }
 }
 </script>
+
 
 </body>
 </html>
