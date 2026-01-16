@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Altius Academy | Class Schedule</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ICON -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- LAYOUT -->
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* ================= TIMETABLE ================= */
+    .timetable {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      background: white;
+    }
+
+    .timetable th,
+    .timetable td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: center;
+      vertical-align: top;
+    }
+
+    .timetable thead th {
+      background: #450050;
+      color: white;
+      font-size: 15px;
+    }
+
+    .time-slot {
+      background: black;
+      color: white;
+      font-weight: bold;
+      width: 140px;
+    }
+
+    /* ================= CLASS BOX ================= */
+    .class-box {
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      line-height: 1.4;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    }
+
+    /* ================= COLOR THEME ================= */
+    .class-green   { background:#4ADE80; }
+    .class-blue    { background:#38BDF8; }
+    .class-pink    { background:#D946EF; }
+    .class-orange  { background:#F97316; }
+    .class-yellow  { background:#EAB308; }
+    .class-teal    { background:#22C55E; }
+    .class-red     { background:#EF4444; }
+    .class-purple  { background:#A855F7; }
+
+    hr {
+      border: 0;
+      border-top: 1px dashed #aaa;
+      margin: 6px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="top-left">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <a href="StaffHomepage.html" class="top-logo">
+      <img src="images/logo1.png">
+      <span>Altius Academy</span>
+    </a>
+  </div>
+
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="StaffHomepage.html">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <nav class="menu">
+    <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+    <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+    <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+    <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+    <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+    <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+  </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+  <h2 style="margin-bottom:20px;">Class Schedule</h2>
+
+  <table class="timetable">
+    <thead>
+      <tr>
+        <th>Time / Day</th>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+        <th>Saturday</th>
+        <th>Sunday</th>
+      </tr>
+    </thead>
+    <tbody id="timetableBody"></tbody>
+  </table>
+
+</main>
+</div>
+
+<script>
+/* ================= UI ================= */
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu(){
+  const d = document.getElementById("userDropdown");
+  d.style.display = d.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", e => {
+  if(!e.target.closest(".top-right")){
+    document.getElementById("userDropdown").style.display = "none";
+  }
+});
+
+function logout(){
+  localStorage.removeItem("staff");
+  location.href="login.html";
+}
+
+/* ================= COLOR MAPPING ================= */
+function getClassColor(subject){
+  subject = subject.toLowerCase();
+
+  if(subject.includes("sejarah")) return "class-green";
+  if(subject.includes("math")) return "class-blue";
+  if(subject.includes("biology")) return "class-teal";
+  if(subject.includes("science")) return "class-orange";
+  if(subject.includes("english")) return "class-green";
+  if(subject.includes("geography")) return "class-pink";
+  if(subject.includes("additional")) return "class-purple";
+
+  return "class-yellow";
+}
+
+/* ================= LOAD SCHEDULE ================= */
+fetch("http://localhost:3000/classes/schedule")
+.then(res => res.json())
+.then(data => {
+
+  const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  const times = [...new Set(data.map(c => c.CLASS_TIME))].sort();
+
+  const tbody = document.getElementById("timetableBody");
+  tbody.innerHTML = "";
+
+  times.forEach(time => {
+    const tr = document.createElement("tr");
+
+    const timeTd = document.createElement("td");
+    timeTd.className = "time-slot";
+    timeTd.textContent = time;
+    tr.appendChild(timeTd);
+
+    days.forEach(day => {
+      const td = document.createElement("td");
+
+      const classes = data.filter(
+        c => c.CLASS_TIME === time && c.CLASS_DAY === day
+      );
+
+      classes.forEach((c, i) => {
+        const box = document.createElement("div");
+        box.className = "class-box";
+        box.classList.add(getClassColor(c.SUBJECT_NAME));
+
+        box.innerHTML = `
+          <strong>${c.CLASS_NAME}</strong><br>
+          ${c.SUBJECT_NAME}<br>
+          ${c.TEACHER_NAME}<br>
+          ${c.PREREQUISITES || "None"}
+        `;
+
+        td.appendChild(box);
+
+        if(i < classes.length - 1){
+          td.appendChild(document.createElement("hr"));
+        }
+      });
+
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Altius Academy | Student List</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f6f9;
+        }
+
+        /* ================= LAYOUT ================= */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+    
+        .sidebar {
+        width: 240px;
+        background: #450050;
+        color: white;
+        padding: 16px;
+        padding-bottom: 24px;   /* 👈 ADD THIS */
+        display: flex;
+        flex-direction: column;
+        }
+
+
+        .sidebar.collapsed {
+            width: 72px;
+            padding: 12px 8px;
+        }
+
+        /* Header */
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            background: #ffffff;
+            padding: 6px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo img {
+            height: 32px;
+            display: block;
+        }
+
+        .brand {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Staff profile */
+        .staff-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.12);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .staff-avatar {
+            width: 42px;
+            height: 42px;
+            background: #6b1b6b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .staff-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .staff-role {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+
+        /* Menu */
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f3e8ff;
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .menu a span {
+            margin-left: 8px;
+        }
+
+        .menu a:hover {
+            background: #5a155a;
+        }
+
+        .menu a.active {
+            background: #6b1b6b;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .sidebar-footer {
+            margin-top: auto;
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: #6b1b6b;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: #5a155a;
+        }
+
+        /* ===== COLLAPSED SIDEBAR FIXES ===== */
+        .sidebar.collapsed .brand,
+        .sidebar.collapsed .staff-info,
+        .sidebar.collapsed .menu a span,
+        .sidebar.collapsed .logout-btn {
+            display: none;
+        }
+
+        .sidebar.collapsed .logo-wrap {
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .staff-profile {
+            justify-content: center;
+            padding: 8px;
+        }
+
+        /* ================= MAIN ================= */
+        .main {
+            flex: 1;
+            padding: 32px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: 6px;
+            border: none;
+            background: #450050;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background: #5a155a;
+        }
+
+        .button.danger {
+            background: #7a1a7a;
+        }
+
+        .button.danger:hover {
+            background: #5a155a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        th {
+            background: #f3f4f6;
+            padding: 12px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .action-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .type-box {
+            background: #f9fafb;
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .type-main {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .type-sub {
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-wrap">
+                <div class="logo">
+                    <img src="images/logo1.png" alt="Altius Academy">
+                </div>
+                <span class="brand">Altius Academy</span>
+            </div>
+            <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        </div>
+
+        <div class="staff-profile">
+            <div class="staff-avatar">👤</div>
+            <div class="staff-info">
+                <div class="staff-name">Staff Name</div>
+                <div class="staff-role">Administrator</div>
+            </div>
+        </div>
+
+        <nav class="menu">
+            <a href="TeacherList.html" title="Teacher"><span>Teacher</span></a>
+            <a href="StudentListTEST.html" class="active" title="Student"><span>Student</span></a>
+            <a href="ClassList.html" title="Class"><span>Class</span></a>
+            <a href="EnrollmentList.html" title="Enrollment"><span>Enrollment</span></a>
+            <a href="PackageList.html" title="Package"><span>Package</span></a>
+            <a href="SubjectList.html" title="Subject"><span>Subject</span></a>
+            <a href="AttendanceList.html" title="Attendance"><span>Attendance</span></a>
+            <a href="report.html" title="Report"><span>Report</span></a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main">
+        <div class="page-header">
+            <h2>Student List</h2>
+            <a href="StudentAdd.html" class="button">Add</a>
+        </div>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>IC</th>
+                <th>Address</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Type</th>
+                <th>Action</th>
+            </tr>
+            <tbody id="studentTable"></tbody>
+        </table>
+    </main>
+</div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+fetch("http://localhost:3000/students")
+.then(res => res.json())
+.then(data => {
+    const table = document.getElementById("studentTable");
+    table.innerHTML = "";
+
+    data.forEach(s => {
+        let typeDisplay = "";
+
+        if (s.STUDENT_TYPE === "Primary") {
+            typeDisplay = `
+              <div class="type-box">
+                <div class="type-main">Primary</div>
+                <div class="type-sub">${s.STUDENT_YEAR ?? "-"}</div>
+              </div>`;
+        }
+
+        if (s.STUDENT_TYPE === "Secondary") {
+            typeDisplay = `
+              <div class="type-box">
+                <div class="type-main">Secondary</div>
+                <div class="type-sub">
+                  Form ${s.STUDENT_FORM ?? "-"} · ${s.STREAM ?? "No Stream"}
+                </div>
+              </div>`;
+        }
+
+        table.innerHTML += `
+        <tr>
+            <td>${s.STUDENT_ID}</td>
+            <td>${s.STUDENT_NAME}</td>
+            <td>${s.STUDENT_IC ?? "-"}</td>
+            <td>${s.STUDENT_ADDRESS ?? "-"}</td>
+            <td>${s.STUDENT_EMAIL ?? "-"}</td>
+            <td>${s.STUDENT_PHONENUM ?? "-"}</td>
+            <td>${typeDisplay}</td>
+            <td class="action-cell">
+                <a href="StudentEdit.html?id=${s.STUDENT_ID}" class="button">Edit</a>
+                <button class="button danger" onclick="del(${s.STUDENT_ID})">Delete</button>
+            </td>
+        </tr>`;
+    });
+});
+
+function del(id) {
+    if (confirm("Delete this student?")) {
+        fetch(`http://localhost:3000/students/${id}`, { method: "DELETE" })
+            .then(() => location.reload());
+    }
+}
+
+function logout() {
+    localStorage.removeItem("staff");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Altius Academy | Edit Class</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .dropdown {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .dropdown div {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .dropdown div:hover {
+            background: #f3f4f6;
+        }
+
+        #selectedPrereq li {
+            list-style: none;
+            margin: 6px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f3f4f6;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        #selectedPrereq button {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+    <div class="top-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <a href="StaffHomepage.html" class="top-logo">
+            <img src="images/logo1.png">
+            <span>Altius Academy</span>
+        </a>
+    </div>
+
+    <div class="top-right">
+        <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+        <div class="user-dropdown" id="userDropdown">
+            <a href="#">My Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+    <nav class="menu">
+        <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+        <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+        <a href="ClassList.html" class="active">
+            <i class="fa-solid fa-school"></i><span>Class</span>
+        </a>
+        <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+        <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+        <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+        <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+        <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+    </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+<div class="form-page">
+<div class="form-card">
+
+    <div class="form-header">
+        <h2>Edit Class</h2>
+        <p>Update class details and prerequisites</p>
+    </div>
+
+    <form id="classForm">
+
+        <div class="form-grid">
+
+            <div class="form-row full">
+                <label>Class Name</label>
+                <input id="Class_Name" required>
+            </div>
+
+            <div class="form-row">
+                <label>Time</label>
+                <input id="Class_Time" required>
+            </div>
+
+            <div class="form-row">
+                <label>Day</label>
+                <input id="Class_Day" required>
+            </div>
+
+            <div class="form-row">
+                <label>Package</label>
+                <select id="Class_Package" required>
+                    <option value="">-- Select Package --</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Subject</label>
+                <select id="Class_Subjects" required disabled>
+                    <option value="">-- Select Subject --</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Teacher</label>
+                <select id="Class_Teacher" required>
+                    <option value="">-- Select Teacher --</option>
+                </select>
+            </div>
+
+            <div class="form-row full">
+                <label>Search / Add Prerequisite Class</label>
+                <input id="searchPrereq" placeholder="Search class code or name">
+                <div id="searchResult" class="dropdown"></div>
+            </div>
+
+            <div class="form-row full">
+                <label>Selected Prerequisites</label>
+                <ul id="selectedPrereq"></ul>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button class="button" type="submit">Update Class</button>
+            <a href="ClassList.html" class="button">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+</div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const API = "http://localhost:3000";
+const id = new URLSearchParams(location.search).get("id");
+const selectedPrereqs = [];
+
+const Class_Name = document.getElementById("Class_Name");
+const Class_Time = document.getElementById("Class_Time");
+const Class_Day = document.getElementById("Class_Day");
+
+const packageSelect = document.getElementById("Class_Package");
+const subjectSelect = document.getElementById("Class_Subjects");
+const teacherSelect = document.getElementById("Class_Teacher");
+
+const searchInput = document.getElementById("searchPrereq");
+const searchResult = document.getElementById("searchResult");
+const selectedPrereqList = document.getElementById("selectedPrereq");
+
+let classData = null;
+let teachersLoaded = false;
+
+/* UI */
+function toggleSidebar(){ document.getElementById("sidebar").classList.toggle("collapsed"); }
+function toggleUserMenu(){
+    const m = document.getElementById("userDropdown");
+    m.style.display = m.style.display === "block" ? "none" : "block";
+}
+function logout(){
+    localStorage.removeItem("staff");
+    location.href="login.html";
+}
+
+/* LOAD PACKAGES */
+fetch(`${API}/packages`)
+.then(r=>r.json())
+.then(data=>{
+    data.forEach(p=>{
+        packageSelect.innerHTML +=
+            `<option value="${p.PACKAGE_ID}">${p.PACKAGE_NAME}</option>`;
+    });
+});
+
+/* LOAD TEACHERS */
+fetch(`${API}/teachers`)
+.then(r=>r.json())
+.then(data=>{
+    teacherSelect.innerHTML = `<option value="">-- Select Teacher --</option>`;
+    data.forEach(t=>{
+        teacherSelect.innerHTML +=
+            `<option value="${t.TEACHER_ID}">${t.TEACHER_NAME}</option>`;
+    });
+    teachersLoaded = true;
+    if(classData) teacherSelect.value = classData.TEACHER_ID;
+});
+
+/* PACKAGE → SUBJECT */
+async function loadSubjectsByPackage(packageId, selected=null){
+    subjectSelect.innerHTML = `<option value="">-- Select Subject --</option>`;
+    subjectSelect.disabled = true;
+    if(!packageId) return;
+
+    const res = await fetch(`${API}/subjects/by-package/${packageId}`);
+    const subs = await res.json();
+
+    subs.forEach(s=>{
+        subjectSelect.innerHTML +=
+            `<option value="${s.SUBJECT_ID}">${s.SUBJECT_NAME}</option>`;
+    });
+
+    if(selected) subjectSelect.value = selected;
+    subjectSelect.disabled = false;
+}
+
+packageSelect.addEventListener("change",()=>{
+    loadSubjectsByPackage(packageSelect.value);
+});
+
+/* LOAD CLASS */
+fetch(`${API}/classes/${id}`)
+.then(r=>r.json())
+.then(async c=>{
+    classData = c;
+    Class_Name.value = c.CLASS_NAME;
+    Class_Time.value = c.CLASS_TIME;
+    Class_Day.value = c.CLASS_DAY;
+
+    if(teachersLoaded) teacherSelect.value = c.TEACHER_ID;
+
+    const res = await fetch(`${API}/subjects/${c.SUBJECT_ID}`);
+    const subject = await res.json();
+    packageSelect.value = subject.PACKAGE_ID;
+    loadSubjectsByPackage(subject.PACKAGE_ID, c.SUBJECT_ID);
+});
+
+/* LOAD PREREQ */
+function loadPrereq(){
+    selectedPrereqs.length = 0;
+    selectedPrereqList.innerHTML = "";
+
+    fetch(`${API}/classes/${id}/prerequisites`)
+    .then(r=>r.json())
+    .then(data=>{
+        data.forEach(p=>{
+            selectedPrereqs.push(p.CLASS_ID);
+            const li = document.createElement("li");
+            li.innerHTML = `${p.CLASS_NAME} <button type="button">✖</button>`;
+            li.querySelector("button").onclick = ()=>{
+                fetch(`${API}/classes/prerequisites/${p.PREREQUISITE_ID}`,{method:"DELETE"})
+                .then(loadPrereq);
+            };
+            selectedPrereqList.appendChild(li);
+        });
+    });
+}
+loadPrereq();
+
+/* SEARCH PREREQ */
+searchInput.addEventListener("input", async e=>{
+    const key = e.target.value.trim();
+    searchResult.innerHTML="";
+    if(!key) return;
+
+    const res = await fetch(`${API}/classes`);
+    const classes = await res.json();
+
+    classes.filter(c =>
+        c.CLASS_ID !== id &&
+        !selectedPrereqs.includes(c.CLASS_ID) &&
+        (c.CLASS_ID.toLowerCase().includes(key.toLowerCase()) ||
+         c.CLASS_NAME.toLowerCase().includes(key.toLowerCase()))
+    ).forEach(c=>{
+        const div = document.createElement("div");
+        div.textContent = `${c.CLASS_ID} - ${c.CLASS_NAME}`;
+        div.onclick = ()=>addPrereq(c.CLASS_ID);
+        searchResult.appendChild(div);
+    });
+});
+
+function addPrereq(cid){
+    fetch(`${API}/classes/${id}/prerequisites`,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ prerequisite_class_id: cid })
+    }).then(loadPrereq);
+
+    searchInput.value="";
+    searchResult.innerHTML="";
+}
+
+/* UPDATE */
+document.getElementById("classForm").onsubmit = e=>{
+    e.preventDefault();
+
+    fetch(`${API}/classes/${id}`,{
+        method:"PUT",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+            name: Class_Name.value,
+            time: Class_Time.value,
+            day: Class_Day.value,
+            subject_id: subjectSelect.value,
+            teacher_id: teacherSelect.value,
+            prerequisites: selectedPrereqs
+        })
+    }).then(res=>{
+        if(res.ok){
+            alert("Class updated successfully");
+            location.href="ClassList.html";
+        } else {
+            alert("Failed to update class");
+        }
+    });
+};
+</script>
+
+</body>
+</html>

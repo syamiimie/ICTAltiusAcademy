@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Altius Academy | Reports</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* ===== REPORT PAGE ===== */
+        .report-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .report-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .report-card {
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 28px 32px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+
+        .report-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .report-header i {
+            font-size: 22px;
+            color: #450050;
+        }
+
+        .report-header h3 {
+            margin: 0;
+            color: #450050;
+            font-size: 20px;
+        }
+
+        .report-card p {
+            margin: 6px 0;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .report-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+    <div class="top-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <a href="StaffHomepage.html" class="top-logo">
+            <img src="images/logo1.png">
+            <span>Altius Academy</span>
+        </a>
+    </div>
+
+    <div class="top-right">
+        <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+        <div class="user-dropdown" id="userDropdown">
+            <a href="StaffHomepage.html">My Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+    <nav class="menu">
+        <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+        <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+        <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+        <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+        <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+        <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+        <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+        <a href="Report.html" class="active"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+    </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+    <div class="report-wrapper">
+
+        <h2>Reports Overview</h2>
+        <p style="color:#6b7280; margin-top:4px;">
+            View summarized system reports for management and monitoring.
+        </p>
+
+        <div class="report-list">
+
+            <!-- FINANCIAL REPORT -->
+            <div class="report-card">
+                <div class="report-header">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                    <h3>Financial Report</h3>
+                </div>
+
+                <p>• Student payment history</p>
+                <p>• Package revenue summary</p>
+                <p>• Outstanding payment balances</p>
+
+                <div class="report-actions">
+                    <a href="FinancialReportList.html" class="button">
+                        View Report
+                    </a>
+                </div>
+            </div>
+
+            <!-- ATTENDANCE REPORT -->
+            <div class="report-card">
+                <div class="report-header">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <h3>Attendance Report</h3>
+                </div>
+
+                <p>• Student attendance records</p>
+                <p>• Class participation tracking</p>
+                <p>• Absence and attendance summary</p>
+
+                <div class="report-actions">
+                    <a href="AttendanceReportList.html" class="button">
+                        View Report
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu() {
+    const m = document.getElementById("userDropdown");
+    m.style.display = m.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", e => {
+    if (!e.target.closest(".top-right")) {
+        document.getElementById("userDropdown").style.display = "none";
+    }
+});
+
+function logout() {
+    localStorage.removeItem("staff");
+    location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

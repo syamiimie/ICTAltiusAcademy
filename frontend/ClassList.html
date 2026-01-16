@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Altius Academy | Class List</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="top-left">
+    <button class="menu-btn" id="menuBtn">☰</button>
+    <a href="StaffHomepage.html" class="top-logo">
+      <img src="images/logo1.png">
+      <span>Altius Academy</span>
+    </a>
+  </div>
+
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="StaffHomepage.html">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+  <nav class="menu">
+    <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+    <a href="ClassList.html" class="active"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+    <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+    <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+    <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+    <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+  </nav>
+</aside>
+
+<main class="main">
+
+  <div class="page-header">
+    <h2>Class List</h2>
+    <div>
+      <a href="ClassAdd.html" class="button">Add</a>
+      <a href="ClassSchedule.html" class="button">Schedule</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Time</th>
+          <th>Day</th>
+          <th>Package</th>
+          <th>Subject</th>
+          <th>Teacher</th>
+          <th>Prerequisite</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="classTable"></tbody>
+    </table>
+  </div>
+
+</main>
+</div>
+
+<script>
+const sidebar=document.getElementById("sidebar");
+menuBtn.onclick=()=>sidebar.classList.toggle("collapsed");
+
+function toggleUserMenu(){
+  const m=document.getElementById("userDropdown");
+  m.style.display=m.style.display==="block"?"none":"block";
+}
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".top-right")){
+    document.getElementById("userDropdown").style.display="none";
+  }
+});
+function logout(){
+  localStorage.removeItem("staff");
+  location.href="login.html";
+}
+
+fetch("http://localhost:3000/classes/with-prereq")
+.then(r=>r.json())
+.then(data=>{
+  classTable.innerHTML="";
+  data.forEach(c=>{
+    classTable.innerHTML+=`
+      <tr>
+        <td>${c.CLASS_ID}</td>
+        <td>${c.CLASS_NAME}</td>
+        <td>${c.CLASS_TIME}</td>
+        <td>${c.CLASS_DAY}</td>
+        <td>${c.PACKAGE_NAME}</td>
+        <td>${c.SUBJECT_NAME}</td>
+        <td>${c.TEACHER_NAME}</td>
+        <td>${c.PREREQUISITES ?? "-"}</td>
+        <td class="action-cell">
+          <a href="ClassEdit.html?id=${c.CLASS_ID}" class="button">Edit</a>
+          <button class="button delete" onclick="del(${c.CLASS_ID})">Delete</button>
+        </td>
+      </tr>`;
+  });
+});
+
+function del(id){
+  if(confirm("Delete this class?")){
+    fetch(`http://localhost:3000/classes/${id}`,{method:"DELETE"})
+    .then(()=>location.reload());
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,174 @@
+/* ===== GLOBAL ===== */
+* {
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f4f6f9;
+}
+
+/* ================= TOP BAR ================= */
+.topbar {
+    height: 56px;
+    background: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.top-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #450050;
+    cursor: pointer;
+}
+
+.top-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.top-logo img {
+    height: 30px;
+}
+
+.top-logo span {
+    font-weight: 600;
+    font-size: 16px;
+    color: #450050;
+}
+
+/* ================= LAYOUT ================= */
+.layout {
+    display: flex;
+    height: calc(100vh - 56px);
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 220px;
+    background: #450050;
+    padding: 12px;
+    transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: 72px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.menu a i {
+    min-width: 24px;
+    text-align: center;
+}
+
+.menu a span {
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .menu a span {
+    display: none;
+}
+
+.menu a.active,
+.menu a:hover {
+    background: #6b1b6b;
+}
+
+/* ================= MAIN ================= */
+.main {
+    flex: 1;
+    padding: 24px 32px;
+    overflow-y: auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* ================= TABLE ================= */
+.table-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th {
+    background: #f3f4f6;
+    padding: 14px;
+    font-size: 14px;
+    text-align: left;
+}
+
+td {
+    padding: 14px;
+    font-size: 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* ================= ACTION ================= */
+.action-cell {
+    display: flex;
+    gap: 10px;
+}
+
+.button {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 10px;
+    background: #450050;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.button.delete {
+    background: #7a1a7a;
+}

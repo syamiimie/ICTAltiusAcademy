@@ -1,0 +1,830 @@
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: #f5f6fa;
+    color: #000;
+}
+/* =========================================================
+   USER DROPDOWN (FIXED)
+========================================================= */
+.user-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 36px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    min-width: 160px;
+    z-index: 999;
+    overflow: hidden;
+}
+
+.user-dropdown a {
+    display: block;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: #111;
+    font-size: 14px;
+}
+
+.user-dropdown a:hover {
+    background: #f3f4f6;
+}
+ 
+/* =========================================================
+   TOP BAR
+========================================================= */
+.topbar {
+    height: 56px;
+    background: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.top-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #450050;
+    cursor: pointer;
+}
+
+.top-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.top-logo img {
+    height: 30px;
+}
+
+.top-logo span {
+    font-weight: 600;
+    font-size: 16px;
+    color: #450050;
+}
+
+.top-right {
+    position: relative;
+}
+
+.user-btn {
+    cursor: pointer;
+    font-size: 14px;
+    color: #450050;
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+.layout {
+    display: flex;
+    height: calc(100vh - 56px);
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+.sidebar {
+    width: 220px;
+    background: #450050;
+    padding: 12px;
+    transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: 72px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.menu a:hover,
+.menu a.active {
+    background: #6b1b6b;
+}
+
+.menu a span {
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .menu a span {
+    display: none;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+.main {
+    flex: 1;
+    padding: 24px 32px;
+    overflow-y: auto;
+}
+
+/* =========================================================
+   BUTTON
+========================================================= */
+.button {
+    background: #8c249c;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 18px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.button:hover {
+    background: #e753fe;
+}
+
+/* =========================================================
+   FORM PAGE (ADD / EDIT)
+========================================================= */
+.form-page {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.form-card {
+    width: 100%;
+    max-width: 820px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 40px 48px;
+    box-shadow:
+        0 8px 15px rgba(0,0,0,0.12),
+        0 15px 40px rgba(0,0,0,0.08);
+}
+
+.form-header {
+    background: linear-gradient(135deg, #450050, #7b2c85);
+    padding: 26px;
+    border-radius: 18px;
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-header h2 {
+    font-size: 26px;
+    margin-bottom: 6px;
+}
+
+.form-header p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row.full {
+    grid-column: span 2;
+}
+
+.form-row label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #450050;
+    font-weight: 500;
+}
+
+.form-row input,
+.form-row select {
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 40px;
+}
+
+.form-info {
+    background: #f3f4f6;
+    border-left: 4px solid #450050;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    color: #374151;
+}
+
+.form-hint {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.button.secondary {
+    background: #e5e7eb;
+    color: #450050;
+}
+
+.button.secondary:hover {
+    background: #d1d5db;
+}
+
+.radio-inline {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    height: 44px; /* align dengan input */
+}
+
+.radio-inline label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    color: #450050;
+}
+
+/* =========================================================
+   ENROLLMENT CARD 
+========================================================= */
+.enrollcard-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 24px;
+}
+
+.enroll-card {
+    background: #450050;
+    color: white;
+    padding: 30px;
+    border-radius: 28px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.enroll-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.enroll-card h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+/* Status badge */
+.enroll-card .badge {
+    background: #4CAF50;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.badge.active {
+    background: #4CAF50;
+}
+
+.badge.inactive {
+    background: #f44336;
+}
+
+/* Package text */
+.enroll-card .package-text {
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+/* ================= TABLE ================= */
+.table-card table thead th {
+    background: #450050;      /* purple */
+    color: #ffffff;
+    font-weight: 600;
+    padding: 14px 10px;
+    text-align: left;
+}
+
+.class-table {
+    margin-top: 14px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: white;
+}
+
+.class-table thead th {
+    background: rgba(255,255,255,0.15);
+    font-weight: 600;
+}
+
+.class-table th,
+.class-table td {
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 10px 8px;
+    text-align: center;
+}
+
+/* Payment link */
+.payment-title {
+    margin-top: 14px;
+}
+
+.payment-title a {
+    color: aqua;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+/* Actions (button bottom-right) */
+.card-actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row.full {
+        grid-column: span 1;
+    }
+
+    .enrollcard-container {
+        grid-template-columns: 1fr;
+    }
+}
+/* =========================================================
+   ATTENDANCE TABLE (ADD / EDIT)
+========================================================= */
+
+.attendance-table-wrapper {
+    margin-top: 30px;
+}
+
+.attendance-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+.attendance-table thead th {
+    background: #f3f4f6;
+    color: #450050;
+    font-weight: 600;
+    padding: 14px 16px;
+}
+
+.attendance-table thead th.center {
+    text-align: center;
+    width: 120px;
+}
+
+.attendance-table tbody td {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+}
+
+.attendance-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.attendance-table tbody td:first-child {
+    font-weight: 500;
+    color: #111827;
+}
+
+.attendance-table tbody td.center {
+    text-align: center;
+}
+
+.attendance-table input[type="radio"] {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.empty-state {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 24px !important;
+}
+
+/* spacing before save button */
+.form-actions {
+    margin-top: 36px;
+}
+/* =========================================================
+   ATTENDANCE REPORT SUMMARY
+========================================================= */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 24px;
+    margin: 40px 0;
+}
+
+.summary-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 22px 24px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.summary-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #fff;
+}
+
+.icon-purple { background: #6b1b6b; }
+.icon-blue   { background: #3b82f6; }
+.icon-green  { background: #4CAF50; }
+.icon-red    { background: #f44336; }
+
+.summary-info h4 {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.summary-info p {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 24px;
+}
+
+/* Card putih */
+.dashboard-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* Header card */
+.dashboard-card h3 {
+  margin-bottom: 14px;
+  color: #450050;
+  font-size: 18px;
+}
+
+/* Highlight number */
+.dashboard-card b {
+  font-size: 18px;
+  color: #111;
+}
+
+/* Icon badge */
+.icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.icon-purple { background:#6b1b6b; }
+.icon-green { background:#22c55e; }
+.icon-blue { background:#3b82f6; }
+.icon-red { background:#ef4444; }
+
+/* =========================================================
+   STAFF DASHBOARD (POLISH & PRETTY)
+========================================================= */
+
+/* Grid dashboard */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 26px;
+}
+
+/* Card putih (dashboard) */
+.dashboard-card {
+    background: #ffffff;
+    border-radius: 26px;
+    padding: 30px 32px;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+}
+
+/* Header dalam card */
+.card-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.dashboard-card h3 {
+    font-size: 18px;
+    color: #450050;
+    font-weight: 600;
+}
+
+/* Icon badge */
+.icon-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 20px;
+}
+
+.icon-purple { background: #6b1b6b; }
+.icon-blue   { background: #3b82f6; }
+.icon-green  { background: #22c55e; }
+.icon-red    { background: #ef4444; }
+
+/* Metric row */
+.metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
+}
+
+.metric span {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.metric strong {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* Split metrics (Primary / Secondary) */
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 14px;
+}
+
+.metric-row div {
+    flex: 1;
+    background: #f9fafb;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+}
+
+.metric-row span {
+    display: block;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.metric-row strong {
+    font-size: 20px;
+    color: #111827;
+}
+
+/* Warning metric (red text) */
+.metric.warning strong {
+    color: #ef4444;
+}
+
+/* Card actions */
+.card-actions {
+    margin-top: 22px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Page header */
+.page-header h2 {
+    font-size: 26px;
+    color: #111827;
+    margin-bottom: 26px;
+}
+
+/* Responsive tweak */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   DASHBOARD ROW ALIGNMENT (FIX DATA LARI)
+========================================================= */
+
+.stat-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-row .label {
+    color: #374151;
+    font-size: 14px;
+}
+
+.stat-row .value {
+    font-weight: 700;
+    font-size: 16px;
+    color: #111827;
+}
+
+.stat-row.danger .label,
+.stat-row.danger .value {
+    color: #ef4444;
+}
+
+/* =========================
+   PACKAGE LIST CARD STYLE
+========================= */
+
+.package-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 28px;
+  margin-top: 20px;
+}
+
+.package-card {
+  background: #450050;
+  color: white;
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.package-card h3 {
+  font-size: 18px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
+.package-card p {
+  font-size: 14px;
+  margin: 6px 0;
+}
+
+/* ACTION BUTTONS */
+.package-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* SMALL BUTTONS */
+.button.small {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.button.small.delete {
+  background: #7a1a7a;
+}
+
+/* =========================
+   SUBJECT LIST CARD FIX
+========================= */
+
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.subject-card {
+  background: #450050;
+  color: white;
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.subject-card h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
+.subject-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.subject-row span {
+  font-size: 14px;
+}
+
+.subject-row .actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* smaller buttons for cards */
+.button.small {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.button.small.delete {
+  background: #7a1a7a;
+}

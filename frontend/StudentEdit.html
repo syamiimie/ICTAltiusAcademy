@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Altius Academy | Edit Student</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+    <div class="top-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <a href="StaffHomepage.html" class="top-logo">
+            <img src="images/logo1.png">
+            <span>Altius Academy</span>
+        </a>
+    </div>
+
+    <div class="top-right">
+        <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+        <div class="user-dropdown" id="userDropdown">
+            <a href="#">My Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+    <nav class="menu">
+        <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+        <a href="StudentList.html" class="active">
+            <i class="fa-solid fa-user-graduate"></i><span>Student</span>
+        </a>
+        <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+        <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+        <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+        <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+        <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+        <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+    </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+<div class="form-page">
+<div class="form-card">
+
+    <div class="form-header">
+        <h2>Edit Student</h2>
+        <p>Update student information</p>
+    </div>
+
+    <form id="editForm">
+
+        <div class="form-grid">
+
+            <div class="form-row full">
+                <label>Name</label>
+                <input type="text" id="student_name" required>
+            </div>
+
+            <div class="form-row">
+                <label>IC</label>
+                <input type="text" id="student_ic" placeholder="e.g. 990101-10-1234">
+                <small class="form-hint">Format: YYMMDD-XX-XXXX</small>
+            </div>
+
+            <div class="form-row">
+                <label>Address</label>
+                <input type="text" id="student_address">
+            </div>
+
+            <div class="form-row">
+                <label>Email</label>
+                <input type="email" id="student_email" placeholder="e.g. student@email.com">
+            </div>
+
+            <div class="form-row">
+                <label>Phone</label>
+                <input type="text" id="student_phone" placeholder="e.g. 0123456789">
+                <small class="form-hint">Numbers only, no space or dash</small>
+            </div>
+
+            <div class="form-row full">
+                <label>Type</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="student_type" value="Primary">
+                        Primary
+                    </label>
+                    <label>
+                        <input type="radio" name="student_type" value="Secondary">
+                        Secondary
+                    </label>
+                </div>
+            </div>
+
+            <!-- PRIMARY -->
+            <div class="form-row" id="primaryRow" style="display:none;">
+                <label>Year</label>
+                <select id="student_year">
+                    <option value="">-- Select Year --</option>
+                    <option value="Year 4">Year 4</option>
+                    <option value="Year 5">Year 5</option>
+                    <option value="Year 6">Year 6</option>
+                </select>
+            </div>
+
+            <!-- SECONDARY -->
+            <div class="form-row" id="secondaryRow1" style="display:none;">
+                <label>Form</label>
+                <select id="student_form">
+                    <option value="">-- Select Form --</option>
+                    <option value="1">Form 1</option>
+                    <option value="2">Form 2</option>
+                    <option value="3">Form 3</option>
+                    <option value="4">Form 4</option>
+                    <option value="5">Form 5</option>
+                </select>
+            </div>
+
+            <div class="form-row" id="secondaryRow2" style="display:none;">
+                <label>Stream</label>
+                <select id="student_stream">
+                    <option value="No Stream">No Stream</option>
+                    <option value="Science">Science</option>
+                    <option value="Social Science">Social Science</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="button">Save</button>
+            <a href="StudentList.html" class="button">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+</div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const id = new URLSearchParams(window.location.search).get("id");
+
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu() {
+    const m = document.getElementById("userDropdown");
+    m.style.display = m.style.display === "block" ? "none" : "block";
+}
+
+function logout() {
+    localStorage.removeItem("staff");
+    location.href = "login.html";
+}
+
+function toggleSubtype(type) {
+    primaryRow.style.display = type === "Primary" ? "block" : "none";
+    secondaryRow1.style.display = type === "Secondary" ? "block" : "none";
+    secondaryRow2.style.display = type === "Secondary" ? "block" : "none";
+
+    if (type === "Primary") {
+        student_form.value = "";
+        student_stream.value = "No Stream";
+    }
+
+    if (type === "Secondary") {
+        student_year.value = "";
+    }
+}
+
+/* LOAD STUDENT DATA */
+fetch(`http://localhost:3000/students/${id}`)
+.then(res => res.json())
+.then(s => {
+
+    student_name.value = s.STUDENT_NAME || "";
+    student_ic.value = s.STUDENT_IC || "";
+    student_address.value = s.STUDENT_ADDRESS || "";
+    student_email.value = s.STUDENT_EMAIL || "";
+    student_phone.value = s.STUDENT_PHONENUM || "";
+
+    const radio = document.querySelector(
+        `input[name="student_type"][value="${s.STUDENT_TYPE}"]`
+    );
+    if (radio) radio.checked = true;
+
+    toggleSubtype(s.STUDENT_TYPE);
+
+    if (s.STUDENT_TYPE === "Primary") {
+        student_year.value = s.STUDENT_YEAR || "";
+    }
+
+    if (s.STUDENT_TYPE === "Secondary") {
+        student_form.value = String(s.STUDENT_FORM || "");
+        student_stream.value = s.STREAM || "No Stream";
+    }
+});
+
+/* TYPE CHANGE */
+document.querySelectorAll('input[name="student_type"]').forEach(r =>
+    r.addEventListener("change", () => toggleSubtype(r.value))
+);
+
+/* SUBMIT */
+editForm.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const payload = {
+        name: student_name.value,
+        ic: student_ic.value,
+        address: student_address.value,
+        email: student_email.value,
+        phone: student_phone.value,
+        type: document.querySelector('input[name="student_type"]:checked').value,
+        year: student_year.value,
+        form: student_form.value,
+        stream: student_stream.value
+    };
+
+    await fetch(`http://localhost:3000/students/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    location.href = "StudentList.html";
+});
+</script>
+
+</body>
+</html>

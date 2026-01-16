@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Altius Academy | Add Attendance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Icons -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="top-left">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <a href="StaffHomepage.html" class="top-logo">
+      <img src="images/logo1.png">
+      <span>Altius Academy</span>
+    </a>
+  </div>
+
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="#">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <nav class="menu">
+    <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+    <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+    <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+    <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+    <a href="AttendanceList.html" class="active">
+      <i class="fa-solid fa-calendar-check"></i><span>Attendance</span>
+    </a>
+    <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+  </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+<div class="form-page">
+<div class="form-card">
+
+  <!-- HEADER -->
+  <div class="form-header">
+    <h2>Add Attendance</h2>
+    <p>Select class and mark student attendance</p>
+  </div>
+
+  <!-- FORM TOP -->
+  <div class="form-grid">
+    <div class="form-row">
+      <label>Date</label>
+      <input type="date" id="attend_date" required>
+    </div>
+
+    <div class="form-row">
+      <label>Class</label>
+      <select id="class_id" required>
+        <option value="">-- Select Class --</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- STUDENT TABLE -->
+  <div class="attendance-table-wrapper">
+    <table class="attendance-table">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th class="center">Present</th>
+          <th class="center">Absent</th>
+        </tr>
+      </thead>
+      <tbody id="studentTable">
+        <tr>
+          <td colspan="3" class="empty-state">
+            Select class to load students
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="form-actions">
+    <button class="button" type="button" onclick="saveAttendance()">
+      Save
+    </button>
+    <a href="AttendanceList.html" class="button secondary">Cancel</a>
+  </div>
+
+</div>
+</div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu() {
+  const m = document.getElementById("userDropdown");
+  m.style.display = m.style.display === "block" ? "none" : "block";
+}
+
+function logout() {
+  localStorage.removeItem("staff");
+  location.href = "login.html";
+}
+
+const classSelect = document.getElementById("class_id");
+const tableBody = document.getElementById("studentTable");
+
+/* LOAD CLASSES */
+fetch("http://localhost:3000/classes")
+  .then(res => res.json())
+  .then(data => {
+    data.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.CLASS_ID;
+      opt.textContent = c.CLASS_NAME;
+      classSelect.appendChild(opt);
+    });
+  });
+
+/* LOAD STUDENTS */
+classSelect.addEventListener("change", () => {
+
+  if (!classSelect.value) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="3" class="empty-state">Please select class</td>
+      </tr>`;
+    return;
+  }
+
+  tableBody.innerHTML = "";
+
+  fetch(`http://localhost:3000/attendance/class/${classSelect.value}/students`)
+    .then(res => res.json())
+    .then(data => {
+
+      if (!Array.isArray(data) || data.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="3" class="empty-state">No students enrolled</td>
+          </tr>`;
+        return;
+      }
+
+      data.forEach(s => {
+        tableBody.innerHTML += `
+          <tr>
+            <td>${s.student_name}</td>
+            <td class="center">
+              <input type="radio" name="s${s.student_id}" value="Present" checked>
+            </td>
+            <td class="center">
+              <input type="radio" name="s${s.student_id}" value="Absent">
+            </td>
+          </tr>`;
+      });
+    });
+});
+
+/* SAVE ATTENDANCE */
+function saveAttendance() {
+
+  const date = document.getElementById("attend_date").value;
+
+  if (!date || !classSelect.value) {
+    alert("Please select date and class");
+    return;
+  }
+
+  const records = [];
+  document.querySelectorAll("input[type=radio]:checked")
+    .forEach(r => {
+      records.push({
+        student_id: Number(r.name.substring(1)),
+        status: r.value
+      });
+    });
+
+  fetch("http://localhost:3000/attendance/bulk", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      attend_date: date,
+      class_id: Number(classSelect.value),
+      records
+    })
+  })
+  .then(() => {
+    alert("Attendance saved successfully");
+    location.href = "AttendanceList.html";
+  });
+}
+</script>
+
+</body>
+</html>

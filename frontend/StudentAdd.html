@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Altius Academy | Add Student</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Small UI fixes -->
+    <style>
+        .form-row {
+            margin-bottom: 20px;
+        }
+
+        .radio-inline {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            height: 44px;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+    <div class="top-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <a href="StaffHomepage.html" class="top-logo">
+            <img src="images/logo1.png">
+            <span>Altius Academy</span>
+        </a>
+    </div>
+
+    <div class="top-right">
+        <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+        <div class="user-dropdown" id="userDropdown">
+            <a href="StaffHomepage.html">My Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+    <nav class="menu">
+        <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+        <a href="StudentList.html" class="active"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+        <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+        <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+        <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+        <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+        <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+        <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+    </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+<div class="form-page">
+<div class="form-card">
+
+    <!-- HEADER -->
+    <div class="form-header">
+        <h2>Add Student</h2>
+        <p>Fill in student personal and academic details</p>
+    </div>
+
+    <!-- FORM -->
+    <form id="studentForm">
+
+        <div class="form-grid">
+
+            <!-- NAME + IC -->
+            <div class="form-row">
+                <label>Name</label>
+                <input type="text" name="name" required>
+            </div>
+
+            <div class="form-row">
+                <label>IC</label>
+                <input type="text" name="ic" placeholder="e.g. 990101-10-1234">
+                <div class="form-hint">Format: YYMMDD-XX-XXXX</div>
+            </div>
+
+            <!-- EMAIL + PHONE -->
+            <div class="form-row">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="e.g. student@gmail.com">
+            </div>
+
+            <div class="form-row">
+                <label>Phone</label>
+                <input type="text" name="phone" placeholder="e.g. 0123456789">
+                <div class="form-hint">Numbers only, no space or dash</div>
+            </div>
+
+            <!-- ADDRESS -->
+            <div class="form-row full">
+                <label>Address</label>
+                <input type="text" name="address">
+            </div>
+
+            <!-- STUDENT TYPE -->
+            <!-- STUDENT TYPE -->
+<div class="form-row full">
+    <label>Student Type</label>
+
+    <div class="radio-inline">
+        <label>
+            <input type="radio" name="type" value="Primary" checked onchange="toggleAcademic()">
+            Primary
+        </label>
+
+        <label>
+            <input type="radio" name="type" value="Secondary" onchange="toggleAcademic()">
+            Secondary
+        </label>
+    </div>
+</div>
+
+
+            <!-- PRIMARY -->
+            <div id="primaryFields" class="form-row full">
+                <label>Year</label>
+                <select name="year" id="yearSelect">
+                    <option value="">-- Select Year --</option>
+                    <option>Year 4</option>
+                    <option>Year 5</option>
+                    <option>Year 6</option>
+                </select>
+            </div>
+
+            <!-- SECONDARY -->
+            <div id="secondaryFields" class="form-grid" style="display:none;">
+                <div class="form-row">
+                    <label>Form</label>
+                    <select name="form">
+                        <option value="">-- Select Form --</option>
+                        <option>Form 1</option>
+                        <option>Form 2</option>
+                        <option>Form 3</option>
+                        <option>Form 4</option>
+                        <option>Form 5</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label>Stream</label>
+                    <select name="stream">
+                        <option>No Stream</option>
+                        <option>Science</option>
+                        <option>Arts</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="form-actions">
+            <button type="submit" class="button">Save</button>
+            <a href="StudentList.html" class="button">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+</div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu() {
+    const menu = document.getElementById("userDropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", e => {
+    if (!e.target.closest(".top-right")) {
+        document.getElementById("userDropdown").style.display = "none";
+    }
+});
+
+function logout() {
+    localStorage.removeItem("staff");
+    location.href = "login.html";
+}
+
+/* 🔥 AUTO TOGGLE + DISABLE YEAR */
+function toggleAcademic() {
+    const type = document.querySelector('input[name="type"]:checked').value;
+
+    const primary = document.getElementById("primaryFields");
+    const secondary = document.getElementById("secondaryFields");
+    const yearSelect = document.getElementById("yearSelect");
+
+    if (type === "Primary") {
+        primary.style.display = "block";
+        secondary.style.display = "none";
+        yearSelect.disabled = false;
+    } else {
+        primary.style.display = "none";
+        secondary.style.display = "grid";
+        yearSelect.value = "";
+        yearSelect.disabled = true;
+    }
+}
+toggleAcademic();
+
+/* SUBMIT */
+document.getElementById("studentForm").addEventListener("submit", e => {
+    e.preventDefault();
+
+    const f = e.target;
+    const type = f.type.value;
+
+    const payload = {
+        name: f.name.value,
+        ic: f.ic.value,
+        email: f.email.value,
+        phone: f.phone.value,
+        address: f.address.value,
+        type: type,
+        year: type === "Primary" ? f.year.value : null,
+        form: type === "Secondary" ? f.form.value : null,
+        stream: type === "Secondary" ? f.stream.value : null
+    };
+
+    fetch("http://localhost:3000/students", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    })
+    .then(() => {
+        alert("Student added successfully");
+        location.href = "StudentList.html";
+    });
+});
+</script>
+
+</body>
+</html>

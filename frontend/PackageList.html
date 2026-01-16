@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Altius Academy | Package List</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Layout + Global Style -->
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="top-left">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <a href="StaffHomepage.html" class="top-logo">
+      <img src="images/logo1.png" alt="Altius Academy">
+      <span>Altius Academy</span>
+    </a>
+  </div>
+
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="StaffHomepage.html">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar collapsed" id="sidebar">
+  <nav class="menu">
+    <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+    <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+    <a href="PackageList.html" class="active"><i class="fa-solid fa-box"></i><span>Package</span></a>
+    <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+    <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+    <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+  </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+  <div class="page-header">
+    <h2>Package List</h2>
+    <a href="PackageAdd.html" class="button">Add</a>
+  </div>
+
+  <!-- ✅ IMPORTANT: package-grid -->
+  <div class="package-grid" id="packageGrid">
+    <!-- DATA FROM DB -->
+  </div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+/* Sidebar toggle */
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+/* User dropdown */
+function toggleUserMenu() {
+  const menu = document.getElementById("userDropdown");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", e => {
+  if (!e.target.closest(".top-right")) {
+    document.getElementById("userDropdown").style.display = "none";
+  }
+});
+
+/* Logout */
+function logout() {
+  localStorage.removeItem("staff");
+  window.location.href = "login.html";
+}
+
+/* Fetch packages */
+fetch("http://localhost:3000/packages")
+.then(res => res.json())
+.then(data => {
+  const grid = document.getElementById("packageGrid");
+  grid.innerHTML = "";
+
+  data.forEach(p => {
+    grid.innerHTML += `
+      <div class="package-card">
+        <h3>${p.PACKAGE_NAME}</h3>
+
+        <p><strong>Fee:</strong> RM ${p.PACKAGE_FEE}</p>
+        <p><strong>Duration:</strong> ${p.DURATION}</p>
+
+        <div class="package-actions">
+          <a href="PackageEdit.html?id=${p.PACKAGE_ID}" class="button small">Edit</a>
+          <button class="button small delete"
+                  onclick="del(${p.PACKAGE_ID})">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+});
+
+/* Delete package */
+function del(id) {
+  if (confirm("Are you sure you want to delete this package?")) {
+    fetch(`http://localhost:3000/packages/${id}`, {
+      method: "DELETE"
+    }).then(() => location.reload());
+  }
+}
+</script>
+
+</body>
+</html>

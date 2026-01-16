@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Altius Academy | Add Enrollment</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+    <div class="top-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <a href="StaffHomepage.html" class="top-logo">
+            <img src="images/logo1.png">
+            <span>Altius Academy</span>
+        </a>
+    </div>
+
+    <div class="top-right">
+        <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+        <div class="user-dropdown" id="userDropdown">
+            <a href="#">My Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+    <nav class="menu">
+        <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+        <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+        <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+        <a href="EnrollmentList.html" class="active">
+            <i class="fa-solid fa-file-signature"></i><span>Enrollment</span>
+        </a>
+        <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+        <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+        <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+        <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+    </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+<div class="form-page">
+    <form id="enrollForm" class="form-card">
+
+        <div class="form-header">
+            <h2>Add Enrollment</h2>
+            <p>Select student and package</p>
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-row full">
+                <label>Student</label>
+                <select id="studentSelect" required></select>
+            </div>
+
+            <div class="form-row full">
+                <label>Package</label>
+                <select id="packageSelect" required></select>
+            </div>
+
+            <div class="form-row full">
+                <label>Subjects in Package</label>
+                <div id="subjectPreview" class="preview-box">
+                    <em>Select a package to view subjects</em>
+                </div>
+            </div>
+
+            <div class="form-row full">
+                <label>Status</label>
+                <select id="statusSelect">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button class="button" type="submit">Save</button>
+            <a href="EnrollmentList.html" class="button">Cancel</a>
+        </div>
+
+    </form>
+</div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu() {
+    const m = document.getElementById("userDropdown");
+    m.style.display = m.style.display === "block" ? "none" : "block";
+}
+
+function logout() {
+    window.location.href = "login.html";
+}
+
+const studentSelect = document.getElementById("studentSelect");
+const packageSelect = document.getElementById("packageSelect");
+const subjectPreview = document.getElementById("subjectPreview");
+const statusSelect = document.getElementById("statusSelect");
+
+let subjects = [];
+
+/* LOAD DATA */
+Promise.all([
+    fetch("http://localhost:3000/students").then(r => r.json()),
+    fetch("http://localhost:3000/packages").then(r => r.json()),
+    fetch("http://localhost:3000/subjects").then(r => r.json())
+]).then(([students, packages, subs]) => {
+
+    subjects = subs;
+
+    studentSelect.innerHTML = `<option value="">-- Select Student --</option>`;
+    students.forEach(s => {
+        studentSelect.innerHTML +=
+        `<option value="${s.STUDENT_ID}">${s.STUDENT_NAME}</option>`;
+    });
+
+    packageSelect.innerHTML = `<option value="">-- Select Package --</option>`;
+    packages.forEach(p => {
+        packageSelect.innerHTML +=
+        `<option value="${p.PACKAGE_ID}">${p.PACKAGE_NAME}</option>`;
+    });
+});
+
+/* SUBJECT PREVIEW */
+packageSelect.addEventListener("change", () => {
+    subjectPreview.innerHTML = "";
+
+    const filtered = subjects.filter(s => s.PACKAGE_ID == packageSelect.value);
+
+    if (filtered.length === 0) {
+        subjectPreview.innerHTML = "<em>No subjects found</em>";
+        return;
+    }
+
+    filtered.forEach(s => {
+        subjectPreview.innerHTML += `<div>• ${s.SUBJECT_NAME}</div>`;
+    });
+});
+
+/* SUBMIT */
+document.getElementById("enrollForm").addEventListener("submit", e => {
+    e.preventDefault();
+
+    fetch("http://localhost:3000/enrollments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            Student_ID: studentSelect.value,
+            Package_ID: packageSelect.value,
+            Enroll_Status: statusSelect.value
+        })
+    })
+    .then(async res => {
+        if (!res.ok) throw new Error(await res.text());
+        alert("Enrollment added successfully");
+        location.href = "EnrollmentList.html";
+    })
+    .catch(err => alert(err.message));
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Altius Academy | Subject List</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="top-left">
+    <button class="menu-btn">☰</button>
+    <a class="top-logo" href="StaffHomepage.html">
+      <img src="images/logo1.png">
+      <span>Altius Academy</span>
+    </a>
+  </div>
+
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="#">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar collapsed" id="sidebar">
+  <nav class="menu">
+    <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="StudentList.html" class="active"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+    <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+    <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+    <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+    <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+    <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+  </nav>
+</aside>
+
+<main class="main subject-page">
+
+  <div class="page-header">
+    <h2>Subject List</h2>
+    <a href="SubjectAdd.html" class="button">Add</a>
+  </div>
+
+  <div class="subject-grid" id="subjectCards"></div>
+
+</main>
+</div>
+
+<script>
+document.querySelector(".menu-btn").onclick =
+  () => document.getElementById("sidebar").classList.toggle("collapsed");
+
+fetch("http://localhost:3000/subjects")
+.then(res => res.json())
+.then(data => {
+
+  const grouped = {};
+  data.forEach(s => {
+    const pkg = s.PACKAGE_NAME || "No Package";
+    if (!grouped[pkg]) grouped[pkg] = [];
+    grouped[pkg].push(s);
+  });
+
+  const container = document.getElementById("subjectCards");
+  container.innerHTML = "";
+
+  Object.keys(grouped).forEach(pkg => {
+    container.innerHTML += `
+      <div class="subject-card">
+        <h3>${pkg}</h3>
+        ${grouped[pkg].map(s => `
+          <div class="subject-row">
+            <span>• ${s.SUBJECT_NAME}</span>
+            <div class="actions">
+              <a href="SubjectEdit.html?id=${s.SUBJECT_ID}" class="button small">Edit</a>
+              <button class="button small delete"
+                onclick="del(${s.SUBJECT_ID})">Delete</button>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  });
+});
+
+function del(id){
+  if(confirm("Delete this subject?")){
+    fetch(`http://localhost:3000/subjects/${id}`, { method:"DELETE" })
+      .then(() => location.reload());
+  }
+}
+
+function toggleUserMenu() {
+  const d = document.getElementById("userDropdown");
+  d.style.display = d.style.display === "block" ? "none" : "block";
+}
+
+function logout(){
+  localStorage.removeItem("staff");
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

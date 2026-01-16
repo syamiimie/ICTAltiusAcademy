@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Altius Academy | Add Teacher</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Layout & Global CSS -->
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+    <div class="top-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <a href="StaffHomepage.html" class="top-logo">
+            <img src="images/logo1.png">
+            <span>Altius Academy</span>
+        </a>
+    </div>
+
+    <div class="top-right">
+        <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+        <div class="user-dropdown" id="userDropdown">
+            <a href="StaffHomepage.html">My Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+    <nav class="menu">
+        <a href="TeacherList.html" class="active">
+            <i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span>
+        </a>
+        <a href="StudentList.html">
+            <i class="fa-solid fa-user-graduate"></i><span>Student</span>
+        </a>
+        <a href="ClassList.html">
+            <i class="fa-solid fa-school"></i><span>Class</span>
+        </a>
+        <a href="EnrollmentList.html">
+            <i class="fa-solid fa-file-signature"></i><span>Enrollment</span>
+        </a>
+        <a href="PackageList.html">
+            <i class="fa-solid fa-box"></i><span>Package</span>
+        </a>
+        <a href="SubjectList.html">
+            <i class="fa-solid fa-book"></i><span>Subject</span>
+        </a>
+        <a href="AttendanceList.html">
+            <i class="fa-solid fa-calendar-check"></i><span>Attendance</span>
+        </a>
+        <a href="Report.html">
+            <i class="fa-solid fa-chart-line"></i><span>Report</span>
+        </a>
+    </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+<div class="form-page">
+<div class="form-card">
+
+    <!-- HEADER -->
+    <div class="form-header">
+        <h2>Add Teacher</h2>
+        <p>Fill in teacher personal information</p>
+    </div>
+
+    <!-- FORM -->
+    <form id="teacherForm">
+
+        <div class="form-grid">
+
+            <div class="form-row">
+                <label>Name</label>
+                <input type="text" name="name" required>
+            </div>
+
+            <div class="form-row">
+                <label>IC</label>
+                <input type="text" name="ic" placeholder="e.g. 990101-10-1234">
+                <small class="form-hint">Format: YYMMDD-XX-XXXX</small>
+            </div>
+
+            <div class="form-row">
+                <label>Email</label>
+                <input type="email" name="email"placeholder="e.g. teacher@email.com">
+            </div>
+
+            <div class="form-row">
+                <label>Phone</label>
+                <input type="text" name="phone" placeholder="e.g. 0123456789">
+                <small class="form-hint">Numbers only, no space or dash</small>
+            </div>
+
+            <div class="form-row full">
+                <label>Address</label>
+                <input type="text" name="address">
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="button">Save</button>
+            <a href="TeacherList.html" class="button secondary">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+</div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu() {
+    const menu = document.getElementById("userDropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", e => {
+    if (!e.target.closest(".top-right")) {
+        document.getElementById("userDropdown").style.display = "none";
+    }
+});
+
+function logout() {
+    localStorage.removeItem("staff");
+    window.location.href = "login.html";
+}
+
+/* SUBMIT FORM */
+document.getElementById("teacherForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const form = e.target;
+
+    const data = {
+        name: form.name.value,
+        ic: form.ic.value,
+        email: form.email.value,
+        phone: form.phone.value,
+        address: form.address.value
+    };
+
+    fetch("http://localhost:3000/teachers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Failed to add teacher");
+        return res.json();
+    })
+    .then(() => {
+        alert("Teacher added successfully");
+        window.location.href = "TeacherList.html";
+    })
+    .catch(err => alert(err.message));
+});
+</script>
+
+</body>
+</html>

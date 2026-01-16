@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Altius Academy | Enrollment</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="top-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <a href="StaffHomepage.html" class="top-logo">
+            <img src="images/logo1.png">
+            <span>Altius Academy</span>
+        </a>
+    </div>
+
+    <div class="top-right">
+        <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+        <div class="user-dropdown" id="userDropdown">
+            <a href="#">My Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+    <nav class="menu">
+        <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+        <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+        <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+        <a href="EnrollmentList.html" class="active">
+            <i class="fa-solid fa-file-signature"></i><span>Enrollment</span>
+        </a>
+        <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+        <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+        <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+        <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+    </nav>
+</aside>
+
+<main class="main">
+
+    <div class="page-header">
+        <h2>Student Enrollments</h2>
+        <a href="EnrollmentAdd.html" class="button">Add</a>
+    </div>
+
+    <div class="enrollcard-container" id="enrollCards"></div>
+
+</main>
+</div>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+function toggleUserMenu() {
+    const m = document.getElementById("userDropdown");
+    m.style.display = m.style.display === "block" ? "none" : "block";
+}
+function logout() {
+    window.location.href = "login.html";
+}
+
+fetch("http://localhost:3000/enrollments")
+.then(res => res.json())
+.then(data => {
+
+    const container = document.getElementById("enrollCards");
+    container.innerHTML = "";
+
+    const grouped = {};
+
+    data.forEach(e => {
+        if (!grouped[e.STUDENT_ID]) {
+            grouped[e.STUDENT_ID] = {
+                id: e.STUDENT_ID,
+                name: e.STUDENT_NAME,
+                status: e.ENROLL_STATUS,
+                packages: new Set(),
+                classes: []
+            };
+        }
+
+        if (e.PACKAGE_NAME) grouped[e.STUDENT_ID].packages.add(e.PACKAGE_NAME);
+
+        grouped[e.STUDENT_ID].classes.push({
+            id: e.CLASS_ID || "-",
+            name: e.CLASS_NAME || "-",
+            time: e.CLASS_TIME || "-",
+            day: e.CLASS_DAY || "-",
+            subject: e.SUBJECT_NAME || "-",
+            teacher: e.TEACHER_NAME || "-"
+        });
+    });
+
+    Object.values(grouped).forEach(s => {
+
+        let rows = "";
+        s.classes.forEach(c => {
+            rows += `
+                <tr>
+                    <td>${c.id}</td>
+                    <td>${c.name}</td>
+                    <td>${c.time}</td>
+                    <td>${c.day}</td>
+                    <td>${c.subject}</td>
+                    <td>${c.teacher}</td>
+                </tr>`;
+        });
+
+        container.innerHTML += `
+        <div class="enroll-card">
+
+            <div class="card-header">
+                <h3>${s.name}</h3>
+                <span class="badge active">${s.status}</span>
+            </div>
+
+            <p class="package-text">
+                <b>Package:</b> ${[...s.packages].join(", ")}
+            </p>
+
+            <table class="class-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Class Name</th>
+                        <th>Time</th>
+                        <th>Day</th>
+                        <th>Subject</th>
+                        <th>Teacher</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+
+            <div class="payment-title">
+                <a href="Payment.html?studentId=${s.id}">Payment Details</a>
+            </div>
+
+            <div class="card-actions">
+                <button class="button"
+                    onclick="location.href='EnrollmentEdit.html?studentId=${s.id}'">
+                    Edit / Delete
+                </button>
+            </div>
+
+        </div>`;
+    });
+});
+</script>
+
+</body>
+</html>

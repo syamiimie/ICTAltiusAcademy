@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Payment Receipt</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<main class="content">
+  <h1>Payment Receipt</h1><br>
+
+  <div class="summary-card">
+    <table border="0" cellspacing="10">
+        <tr>
+            <td><b>Receipt No:</b> </td>
+            <td><span id="paymentId"></span></td>
+        </tr>
+        <tr>
+            <td><b>Student Name:</b></td>
+            <td><span id="studentName"></span></td>
+        </tr>
+        <tr>
+            <td><b>IC:</b></td>
+            <td><span id="studentIC"></span></td>
+        </tr>
+        <tr>
+            <td><b>Enrollment ID:</b></td>
+            <td><span id="enrollId"></span></td>
+        </tr>
+        <tr>
+            <td><b>Package:</b></td>
+            <td><span id="packageName"></span></td>
+        </tr>
+        <tr>
+            <td><b>Amount Paid (RM):</b></td>
+            <td><span id="amount"></span></td>
+        </tr>
+        <tr>
+            <td><b>Payment Date:</b></td>
+            <td><span id="paymentDate"></span></td>
+        </tr>
+    </table>
+  </div>
+
+  <button class="button" onclick="window.print()">Print Receipt</button>
+</main>
+
+<script>
+const enrollId = new URLSearchParams(window.location.search).get("enrollId");
+
+if (!enrollId) {
+  alert("Invalid receipt link");
+  window.location.href = "EnrollmentList.html";
+}
+
+fetch(`http://localhost:3000/payment/receipt?enrollId=${enrollId}`)
+  .then(res => {
+    if (!res.ok) throw new Error("Receipt not found");
+    return res.json();
+  })
+  .then(data => {
+    document.getElementById("paymentId").textContent = data.PAYMENT_ID;
+    document.getElementById("studentName").textContent = data.STUDENT_NAME;
+    document.getElementById("studentIC").textContent = data.STUDENT_IC;
+    document.getElementById("enrollId").textContent = data.ENROLL_ID;
+    document.getElementById("packageName").textContent = data.PACKAGE_NAME;
+    document.getElementById("amount").textContent =
+      parseFloat(data.TOTAL_FEES).toFixed(2);
+    document.getElementById("paymentDate").textContent =
+      new Date(data.PAYMENT_DATE).toLocaleDateString();
+  })
+  .catch(err => {
+    alert(err.message);
+    window.location.href = "EnrollmentList.html";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Altius Academy | Staff Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Icons -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="top-left">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <a href="StaffHomepage.html" class="top-logo">
+      <img src="images/logo1.png">
+      <span>Altius Academy</span>
+    </a>
+  </div>
+
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="StaffHomepage.html">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <nav class="menu">
+    <a href="TeacherList.html">
+      <i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span>
+    </a>
+    <a href="StudentList.html">
+      <i class="fa-solid fa-user-graduate"></i><span>Student</span>
+    </a>
+    <a href="ClassList.html">
+      <i class="fa-solid fa-school"></i><span>Class</span>
+    </a>
+    <a href="EnrollmentList.html">
+      <i class="fa-solid fa-file-signature"></i><span>Enrollment</span>
+    </a>
+    <a href="PackageList.html">
+      <i class="fa-solid fa-box"></i><span>Package</span>
+    </a>
+    <a href="AttendanceList.html">
+      <i class="fa-solid fa-calendar-check"></i><span>Attendance</span>
+    </a>
+    <a href="AttendanceReportList.html">
+      <i class="fa-solid fa-chart-line"></i><span>Report</span>
+    </a>
+  </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+  <h2 style="margin-bottom:24px;">Staff Dashboard</h2>
+
+  <div class="dashboard-grid">
+
+    <!-- STAFF PROFILE -->
+    <div class="dashboard-card">
+      <div class="icon-badge icon-purple">
+        <i class="fa-solid fa-user"></i>
+      </div>
+
+      <h3>Staff Profile</h3>
+
+      <div class="stat-row">
+        <span class="label">Name</span>
+        <span class="value" id="staffName">--</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="label">Email</span>
+        <span class="value" id="staffEmail">--</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="label">Phone</span>
+        <span class="value" id="staffPhone">--</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="label">Username</span>
+        <span class="value" id="staffUsername">--</span>
+      </div>
+
+      <div style="margin-top:20px; display:flex; gap:12px;">
+        <a href="StaffEdit.html" class="button">Edit Profile</a>
+        <a href="StaffAdd.html" class="button secondary">Add Staff</a>
+      </div>
+    </div>
+
+    <!-- STUDENT OVERVIEW -->
+    <div class="dashboard-card">
+      <div class="icon-badge icon-blue">
+        <i class="fa-solid fa-user-graduate"></i>
+      </div>
+
+      <h3>Student Overview</h3>
+
+      <div class="stat-row">
+        <span class="label">Total Students</span>
+        <span class="value" id="totalStudents">0</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="label">Primary Students</span>
+        <span class="value" id="totalPrimary">0</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="label">Secondary Students</span>
+        <span class="value" id="totalSecondary">0</span>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE OVERVIEW -->
+    <div class="dashboard-card">
+      <div class="icon-badge icon-green">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+
+      <h3>Attendance Overview</h3>
+
+      <div class="stat-row">
+        <span class="label">Total Classes</span>
+        <span class="value" id="totalClasses">0</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="label">Average Attendance</span>
+        <span class="value" id="avgAttendance">--</span>
+      </div>
+
+      <div class="stat-row danger">
+        <span class="label">Students &lt; 75%</span>
+        <span class="value" id="lowAttendance">0</span>
+      </div>
+    </div>
+
+    <!-- FINANCIAL SNAPSHOT -->
+    <div class="dashboard-card">
+      <div class="icon-badge icon-red">
+        <i class="fa-solid fa-wallet"></i>
+      </div>
+
+      <h3>Financial Snapshot</h3>
+
+      <div class="stat-row">
+        <span class="label">Total Enrollments</span>
+        <span class="value" id="totalEnrollments">0</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="label">Unpaid Enrollments</span>
+        <span class="value" id="unpaidEnrollments">0</span>
+      </div>
+
+      <div class="stat-row danger">
+        <span class="label">Outstanding Fees</span>
+        <span class="value" id="outstandingAmount">RM 0.00</span>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu(){
+  const m = document.getElementById("userDropdown");
+  m.style.display = m.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", e => {
+  if (!e.target.closest(".top-right")) {
+    document.getElementById("userDropdown").style.display = "none";
+  }
+});
+
+const staff = JSON.parse(localStorage.getItem("staff"));
+if (!staff) {
+  alert("Please login first");
+  location.href = "login.html";
+}
+
+/* STAFF PROFILE */
+fetch(`http://localhost:3000/staff/${staff.STAFF_ID}`)
+  .then(res => res.json())
+  .then(s => {
+    localStorage.setItem("staff", JSON.stringify(s));
+    staffName.innerText = s.STAFF_NAME || "-";
+    staffEmail.innerText = s.STAFF_EMAIL || "-";
+    staffPhone.innerText = s.STAFF_PHONENUM || "-";
+    staffUsername.innerText = s.STAFF_USERNAME ? "@" + s.STAFF_USERNAME : "-";
+  });
+
+/* DASHBOARD DATA */
+fetch("http://localhost:3000/dashboard")
+  .then(res => res.json())
+  .then(d => {
+    totalStudents.innerText = d.students?.TOTAL_STUDENTS || 0;
+    totalPrimary.innerText = d.students?.PRIMARY_STUDENTS || 0;
+    totalSecondary.innerText = d.students?.SECONDARY_STUDENTS || 0;
+
+    totalClasses.innerText = d.classes || 0;
+    avgAttendance.innerText = d.avgAttendance || "--";
+    lowAttendance.innerText = d.lowAttendanceStudents || 0;
+
+    totalEnrollments.innerText = d.financial?.TOTAL_ENROLLMENTS || 0;
+    unpaidEnrollments.innerText = d.financial?.UNPAID_ENROLLMENTS || 0;
+    outstandingAmount.innerText =
+      "RM " + Number(d.financial?.OUTSTANDING_FEES || 0).toFixed(2);
+  });
+
+function logout(){
+  if(confirm("Logout from system?")){
+    localStorage.removeItem("staff");
+    location.href = "login.html";
+  }
+}
+</script>
+
+</body>
+</html>

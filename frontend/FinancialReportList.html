@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Altius Academy | Financial Report</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+  /* ================= REPORT WRAPPER ================= */
+  .report-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ================= FILTER ================= */
+  .report-filter {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr) auto auto auto;
+    gap: 18px;
+    align-items: end;
+    margin: 24px 0 36px;
+  }
+
+  .report-filter label {
+    font-size: 14px;
+    color: #450050;
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .report-filter input[type="month"] {
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+  }
+
+  .checkbox-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    font-size: 14px;
+    color: #450050;
+  }
+
+  /* ================= SUMMARY ================= */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+
+  .summary-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 22px 26px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .summary-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 20px;
+  }
+
+  .bg-green { background:#22c55e; }
+  .bg-blue  { background:#3b82f6; }
+  .bg-red   { background:#ef4444; }
+  .bg-purple{ background:#7c2d8c; }
+
+  .summary-card h4 {
+    margin: 0;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .summary-card p {
+    margin-top: 6px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  /* ================= TABLE ================= */
+  .table-card {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  }
+
+  .table-card h3 {
+    margin-bottom: 16px;
+    color: #450050;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: #450050;
+    color: #ffffff;
+    padding: 14px 12px;
+    font-size: 14px;
+    text-align: left;
+  }
+
+  td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 28px;
+  }
+
+  /* ================= PRINT ================= */
+  @media print {
+    body * { visibility: hidden; }
+    .print-area, .print-area * { visibility: visible; }
+    .print-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    .print-btn { display:none; }
+  }
+  </style>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="top-left">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <a href="StaffHomepage.html" class="top-logo">
+      <img src="images/logo1.png">
+      <span>Altius Academy</span>
+    </a>
+  </div>
+
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="StaffHomepage.html">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <nav class="menu">
+    <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+    <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+    <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+    <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+    <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+    <a href="Report.html" class="active"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+  </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main print-area">
+
+<div class="report-wrapper">
+
+  <h2>Financial Report</h2>
+  <p style="color:#6b7280; margin-top:4px;">
+    Monthly financial summary and outstanding fee analysis
+  </p>
+
+  <!-- FILTER -->
+  <div class="report-filter">
+    <div>
+      <label>Report Period</label>
+      <input type="month" id="month">
+    </div>
+
+    <div class="checkbox-wrap">
+      <input type="checkbox" id="outstandingOnly">
+      <span>Outstanding Fees Only</span>
+    </div>
+
+    <button class="button" onclick="generateReport()">Generate</button>
+    <button class="button secondary print-btn" onclick="window.print()">Print</button>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-icon bg-green"><i class="fa-solid fa-wallet"></i></div>
+      <div>
+        <h4>Total Revenue</h4>
+        <p id="totalRevenue">RM 0.00</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon bg-blue"><i class="fa-solid fa-money-bill"></i></div>
+      <div>
+        <h4>Total Collected</h4>
+        <p id="totalCollected">RM 0.00</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon bg-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div>
+        <h4>Outstanding Fees</h4>
+        <p id="outstandingFees">RM 0.00</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon bg-purple"><i class="fa-solid fa-users"></i></div>
+      <div>
+        <h4>Total Enrollment</h4>
+        <p id="totalEnrollment">0</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <h3>Payment Details</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Package</th>
+          <th>Total Fee</th>
+          <th>Paid</th>
+          <th>Outstanding</th>
+        </tr>
+      </thead>
+      <tbody id="paymentTable">
+        <tr>
+          <td colspan="5" class="empty-state">
+            Select filters and click Generate
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</main>
+</div>
+
+<script>
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("collapsed");
+}
+function toggleUserMenu(){
+  const d = document.getElementById("userDropdown");
+  d.style.display = d.style.display === "block" ? "none" : "block";
+}
+function logout(){
+  localStorage.removeItem("staff");
+  location.href = "login.html";
+}
+
+function generateReport(){
+  const month = document.getElementById("month").value;
+  const outstandingOnly = document.getElementById("outstandingOnly").checked;
+  const table = document.getElementById("paymentTable");
+
+  if(!month){ alert("Please select report period"); return; }
+
+  fetch(`http://localhost:3000/reports/financial-report?month=${month}&outstandingOnly=${outstandingOnly}`)
+  .then(r => r.json())
+  .then(data => {
+    table.innerHTML = "";
+
+    document.getElementById("totalRevenue").innerText = `RM ${data.summary.TOTAL_REVENUE || 0}`;
+    document.getElementById("totalCollected").innerText = `RM ${data.summary.TOTAL_COLLECTED || 0}`;
+    document.getElementById("outstandingFees").innerText = `RM ${data.summary.OUTSTANDING_FEES || 0}`;
+    document.getElementById("totalEnrollment").innerText = data.summary.TOTAL_ENROLLMENT || 0;
+
+    if(!data.payments || data.payments.length === 0){
+      table.innerHTML = `<tr><td colspan="5" class="empty-state">No records found</td></tr>`;
+      return;
+    }
+
+    data.payments.forEach(p => {
+      table.innerHTML += `
+        <tr>
+          <td>${p.STUDENT_NAME}</td>
+          <td>${p.PACKAGE_NAME}</td>
+          <td>RM ${p.TOTAL_FEE}</td>
+          <td>RM ${p.AMOUNT_PAID}</td>
+          <td>RM ${p.OUTSTANDING}</td>
+        </tr>`;
+    });
+  });
+}
+</script>
+
+</body>
+</html>

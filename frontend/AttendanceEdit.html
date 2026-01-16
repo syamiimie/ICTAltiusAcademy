@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Altius Academy | Edit Attendance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Icons -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="top-left">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <a href="StaffHomepage.html" class="top-logo">
+      <img src="images/logo1.png">
+      <span>Altius Academy</span>
+    </a>
+  </div>
+
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="#">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <nav class="menu">
+    <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+    <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+    <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+    <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+    <a href="AttendanceList.html" class="active">
+      <i class="fa-solid fa-calendar-check"></i><span>Attendance</span>
+    </a>
+    <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+  </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+<div class="form-page">
+<div class="form-card">
+
+  <!-- HEADER -->
+  <div class="form-header">
+    <h2>Edit Attendance</h2>
+    <p>Update student attendance</p>
+  </div>
+
+  <!-- DATE + CLASS -->
+  <div class="form-grid">
+    <div class="form-row">
+      <label>Date</label>
+      <input type="date" id="attend_date" required>
+    </div>
+
+    <div class="form-row">
+      <label>Class</label>
+      <select id="class_id" disabled></select>
+    </div>
+  </div>
+
+  <!-- STUDENT TABLE -->
+  <div class="attendance-table-wrapper">
+    <table class="attendance-table">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th class="center">Present</th>
+          <th class="center">Absent</th>
+        </tr>
+      </thead>
+      <tbody id="studentTable"></tbody>
+    </table>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="form-actions">
+    <button class="button" type="button" onclick="updateAttendance()">
+      Save Attendance
+    </button>
+    <a href="AttendanceList.html" class="button secondary">Cancel</a>
+  </div>
+
+</div>
+</div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const id = new URLSearchParams(window.location.search).get("id");
+const tableBody = document.getElementById("studentTable");
+
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu() {
+  const m = document.getElementById("userDropdown");
+  m.style.display = m.style.display === "block" ? "none" : "block";
+}
+
+function logout() {
+  localStorage.removeItem("staff");
+  location.href = "login.html";
+}
+
+let studentId;
+
+/* ================= LOAD ATTENDANCE ================= */
+fetch(`http://localhost:3000/attendance/${id}`)
+.then(res => res.json())
+.then(a => {
+  attend_date.value = a.attend_date;
+  studentId = a.student_id;
+  loadClass(a.class_id);
+  loadStudentRow(a);
+});
+
+/* ================= LOAD CLASS ================= */
+function loadClass(classId) {
+  fetch("http://localhost:3000/classes")
+  .then(res => res.json())
+  .then(data => {
+    class_id.innerHTML = "";
+    data.forEach(c => {
+      class_id.innerHTML += `
+        <option value="${c.CLASS_ID}">
+          ${c.CLASS_NAME}
+        </option>`;
+    });
+    class_id.value = classId;
+  });
+}
+
+/* ================= LOAD STUDENT ROW ================= */
+function loadStudentRow(a) {
+
+  tableBody.innerHTML = `
+    <tr>
+      <td id="studentName">Loading...</td>
+      <td class="center">
+        <input type="radio" name="status" value="Present">
+      </td>
+      <td class="center">
+        <input type="radio" name="status" value="Absent">
+      </td>
+    </tr>
+  `;
+
+  // load student name
+  fetch(`http://localhost:3000/attendance/class/${a.class_id}/students`)
+  .then(res => res.json())
+  .then(data => {
+    const s = data.find(x => x.student_id === a.student_id);
+    document.getElementById("studentName").textContent =
+      s ? s.student_name : "Unknown Student";
+
+    document.querySelector(
+      `input[value="${a.attend_status}"]`
+    ).checked = true;
+  });
+}
+
+/* ================= UPDATE ================= */
+function updateAttendance() {
+
+  const status = document.querySelector(
+    'input[name="status"]:checked'
+  ).value;
+
+  fetch(`http://localhost:3000/attendance/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      attend_date: attend_date.value,
+      attend_status: status,
+      student_id: studentId,
+      class_id: class_id.value
+    })
+  })
+  .then(() => {
+    alert("Attendance updated");
+    location.href = "AttendanceList.html";
+  });
+}
+</script>
+
+</body>
+</html>

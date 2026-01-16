@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Altius Academy | Edit Enrollment</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .preview-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .danger {
+            background-color: #d9534f;
+        }
+
+        .danger:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+    <div class="top-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <a href="StaffHomepage.html" class="top-logo">
+            <img src="images/logo1.png">
+            <span>Altius Academy</span>
+        </a>
+    </div>
+
+    <div class="top-right">
+        <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+        <div class="user-dropdown" id="userDropdown">
+            <a href="#">My Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+    <nav class="menu">
+        <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+        <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+        <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+        <a href="EnrollmentList.html" class="active">
+            <i class="fa-solid fa-file-signature"></i><span>Enrollment</span>
+        </a>
+        <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+        <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+        <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+        <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+    </nav>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+    <div class="page-header">
+        <h2>Edit Enrollment</h2>
+        <a href="EnrollmentList.html" class="button">Back</a>
+    </div>
+
+    <div id="enrollmentCards" class="form-page"></div>
+
+</main>
+</div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function toggleUserMenu() {
+    const m = document.getElementById("userDropdown");
+    m.style.display = m.style.display === "block" ? "none" : "block";
+}
+
+function logout() {
+    window.location.href = "login.html";
+}
+
+const params = new URLSearchParams(window.location.search);
+const studentId = params.get("studentId");
+const container = document.getElementById("enrollmentCards");
+
+let packages = [];
+let subjects = [];
+
+/* LOAD DATA */
+Promise.all([
+    fetch("http://localhost:3000/packages").then(r => r.json()),
+    fetch("http://localhost:3000/subjects").then(r => r.json()),
+    fetch("http://localhost:3000/enrollments").then(r => r.json())
+]).then(([pack, subs, enrollments]) => {
+
+    packages = pack;
+    subjects = subs;
+
+    const filtered = enrollments.filter(e => e.STUDENT_ID == studentId);
+
+    const unique = {};
+    filtered.forEach(e => {
+        if (!unique[e.ENROLL_ID]) unique[e.ENROLL_ID] = e;
+    });
+
+    Object.values(unique).forEach(renderEnrollmentCard);
+});
+
+/* RENDER CARD */
+function renderEnrollmentCard(e) {
+
+    const subjectList = subjects
+        .filter(s => s.PACKAGE_ID == e.PACKAGE_ID)
+        .map(s => `<div>• ${s.SUBJECT_NAME}</div>`)
+        .join("") || "<em>No subjects</em>";
+
+    container.innerHTML += `
+        <form class="form-card" onsubmit="updateEnrollment(event, ${e.ENROLL_ID})">
+
+            <div class="form-header">
+                <h2>${e.STUDENT_NAME}</h2>
+                <p>Enrollment #${e.ENROLL_ID}</p>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-row full">
+                    <label>Package</label>
+                    <select data-package onchange="onPackageChange(this)">
+                        ${packages.map(p => `
+                            <option value="${p.PACKAGE_ID}"
+                                ${p.PACKAGE_ID == e.PACKAGE_ID ? "selected" : ""}>
+                                ${p.PACKAGE_NAME}
+                            </option>
+                        `).join("")}
+                    </select>
+                </div>
+
+                <div class="form-row full">
+                    <label>Subjects in Package</label>
+                    <div class="preview-box" data-subject-preview>
+                        ${subjectList}
+                    </div>
+                </div>
+
+                <div class="form-row full">
+                    <label>Status</label>
+                    <select data-status>
+                        <option value="Active" ${e.ENROLL_STATUS === "Active" ? "selected" : ""}>Active</option>
+                        <option value="Inactive" ${e.ENROLL_STATUS === "Inactive" ? "selected" : ""}>Inactive</option>
+                        <option value="Completed" ${e.ENROLL_STATUS === "Completed" ? "selected" : ""}>Completed</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button class="button" type="submit">Update</button>
+                <button type="button" class="button danger"
+                        onclick="deleteEnrollment(${e.ENROLL_ID})">
+                    Delete
+                </button>
+            </div>
+
+        </form>
+    `;
+}
+
+/* PACKAGE CHANGE → UPDATE PREVIEW */
+function onPackageChange(select) {
+    const form = select.closest("form");
+    const preview = form.querySelector("[data-subject-preview]");
+    preview.innerHTML = "";
+
+    subjects
+        .filter(s => s.PACKAGE_ID == select.value)
+        .forEach(s => preview.innerHTML += `<div>• ${s.SUBJECT_NAME}</div>`);
+
+    if (preview.innerHTML === "") {
+        preview.innerHTML = "<em>No subjects</em>";
+    }
+}
+
+/* UPDATE */
+function updateEnrollment(event, enrollId) {
+    event.preventDefault();
+    const form = event.target;
+
+    fetch(`http://localhost:3000/enrollments/${enrollId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            Package_ID: form.querySelector("[data-package]").value,
+            Enroll_Status: form.querySelector("[data-status]").value
+        })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Update failed");
+        alert("Enrollment updated successfully");
+    })
+    .catch(err => alert(err.message));
+}
+
+/* DELETE */
+function deleteEnrollment(enrollId) {
+    if (!confirm("Are you sure you want to delete this enrollment?")) return;
+
+    fetch(`http://localhost:3000/enrollments/${enrollId}`, {
+        method: "DELETE"
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Delete failed");
+        alert("Enrollment deleted successfully");
+        location.href = "EnrollmentList.html";
+    })
+    .catch(err => alert(err.message));
+}
+</script>
+
+</body>
+</html>

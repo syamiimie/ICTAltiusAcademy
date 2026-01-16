@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Altius Academy | Teacher List</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="top-left">
+    <button class="menu-btn" id="menuBtn">☰</button>
+    <a href="StaffHomepage.html" class="top-logo">
+      <img src="images/logo1.png">
+      <span>Altius Academy</span>
+    </a>
+  </div>
+
+  <div class="top-right">
+    <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
+    <div class="user-dropdown" id="userDropdown">
+      <a href="StaffHomepage.html">My Profile</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+  <nav class="menu">
+    <a href="TeacherList.html" class="active"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="StudentList.html"><i class="fa-solid fa-user-graduate"></i><span>Student</span></a>
+    <a href="ClassList.html"><i class="fa-solid fa-school"></i><span>Class</span></a>
+    <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
+    <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
+    <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
+    <a href="AttendanceList.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+    <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
+  </nav>
+</aside>
+
+<main class="main">
+
+  <div class="page-header">
+    <h2>Teacher List</h2>
+    <a href="TeacherAdd.html" class="button">Add</a>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>IC</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="teacherTable"></tbody>
+    </table>
+  </div>
+
+</main>
+</div>
+
+<script>
+const sidebar = document.getElementById("sidebar");
+const menuBtn = document.getElementById("menuBtn");
+menuBtn.onclick = () => sidebar.classList.toggle("collapsed");
+
+function toggleUserMenu(){
+  const m = document.getElementById("userDropdown");
+  m.style.display = m.style.display === "block" ? "none" : "block";
+}
+document.addEventListener("click", e => {
+  if(!e.target.closest(".top-right")){
+    document.getElementById("userDropdown").style.display = "none";
+  }
+});
+function logout(){
+  localStorage.removeItem("staff");
+  location.href="login.html";
+}
+
+fetch("http://localhost:3000/teachers")
+.then(r=>r.json())
+.then(data=>{
+  teacherTable.innerHTML="";
+  data.forEach(t=>{
+    teacherTable.innerHTML+=`
+      <tr>
+        <td>${t.TEACHER_ID}</td>
+        <td>${t.TEACHER_NAME}</td>
+        <td>${t.TEACHER_IC ?? "-"}</td>
+        <td>${t.TEACHER_EMAIL ?? "-"}</td>
+        <td>${t.TEACHER_PHONENUM ?? "-"}</td>
+        <td>${t.TEACHER_ADDRESS ?? "-"}</td>
+        <td class="action-cell">
+          <a href="TeacherEdit.html?id=${t.TEACHER_ID}" class="button">Edit</a>
+          <button class="button delete" onclick="del(${t.TEACHER_ID})">Delete</button>
+        </td>
+      </tr>`;
+  });
+});
+
+function del(id){
+  if(confirm("Delete this teacher?")){
+    fetch(`http://localhost:3000/teachers/${id}`,{method:"DELETE"})
+    .then(()=>location.reload());
+  }
+}
+</script>
+
+</body>
+</html>
