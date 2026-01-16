@@ -867,7 +867,7 @@ body {
 }
 
 .outstanding-text {
-    color: #dc2626;
+    color: #fa1919;
 }
 
 /* ================= TABLE ================= */
@@ -982,3 +982,6 @@ body {
         grid-column: span 1;
     }
 }
+
+
+
