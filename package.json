@@ -14,5 +14,13 @@
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "oracledb": "^6.10.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syamiimie/ICTAltiusAcademy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/syamiimie/ICTAltiusAcademy/issues"
+  },
+  "homepage": "https://github.com/syamiimie/ICTAltiusAcademy#readme"
 }
