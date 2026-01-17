@@ -9,7 +9,7 @@ exports.getAllPackages = async (req, res) => {
   try {
     conn = await oracledb.getConnection(db);
     const r = await conn.execute(
-      `SELECT * FROM "PACKAGE" ORDER BY PACKAGE_ID`
+      `SELECT * FROM "PACKAGE" ORDER BY PACKAGE_NAME`
     );
     res.json(r.rows);
   } catch (e) {
