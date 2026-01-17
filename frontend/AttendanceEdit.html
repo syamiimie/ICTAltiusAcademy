@@ -59,7 +59,6 @@
 <div class="form-page">
 <div class="form-card">
 
-  <!-- HEADER -->
   <div class="form-header">
     <h2>Edit Attendance</h2>
     <p>Update student attendance</p>
@@ -88,15 +87,17 @@
           <th class="center">Absent</th>
         </tr>
       </thead>
-      <tbody id="studentTable"></tbody>
+      <tbody id="studentTable">
+        <tr>
+          <td colspan="3">Loading...</td>
+        </tr>
+      </tbody>
     </table>
   </div>
 
   <!-- ACTIONS -->
   <div class="form-actions">
-    <button class="button" type="button" onclick="updateAttendance()">
-      Save Attendance
-    </button>
+    <button class="button" onclick="updateAttendance()">Save Attendance</button>
     <a href="AttendanceList.html" class="button secondary">Cancel</a>
   </div>
 
@@ -109,51 +110,63 @@
 <!-- ================= SCRIPT ================= -->
 <script>
 const id = new URLSearchParams(window.location.search).get("id");
+
+const attend_date = document.getElementById("attend_date");
+const class_id = document.getElementById("class_id");
 const tableBody = document.getElementById("studentTable");
 
+let studentId;
+
+/* UI */
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("collapsed");
 }
-
 function toggleUserMenu() {
   const m = document.getElementById("userDropdown");
   m.style.display = m.style.display === "block" ? "none" : "block";
 }
-
 function logout() {
   localStorage.removeItem("staff");
   location.href = "login.html";
 }
 
-let studentId;
-
 /* ================= LOAD ATTENDANCE ================= */
 fetch(`http://localhost:3000/attendance/${id}`)
-.then(res => res.json())
-.then(a => {
-  attend_date.value = a.attend_date;
-  studentId = a.student_id;
-  loadClass(a.class_id);
-  loadStudentRow(a);
-});
+  .then(res => {
+    if (!res.ok) throw new Error("Failed to load attendance");
+    return res.json();
+  })
+  .then(a => {
+
+    attend_date.value = a.attend_date;
+    studentId = a.student_id;
+
+    loadClass(a.class_id);
+    loadStudentRow(a);
+
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Unable to load attendance data");
+  });
 
 /* ================= LOAD CLASS ================= */
-function loadClass(classId) {
+function loadClass(selectedClassId) {
   fetch("http://localhost:3000/classes")
-  .then(res => res.json())
-  .then(data => {
-    class_id.innerHTML = "";
-    data.forEach(c => {
-      class_id.innerHTML += `
-        <option value="${c.CLASS_ID}">
-          ${c.CLASS_NAME}
-        </option>`;
+    .then(res => res.json())
+    .then(data => {
+      class_id.innerHTML = "";
+      data.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.CLASS_ID;
+        opt.textContent = `${c.CLASS_ID} - ${c.CLASS_NAME}`;
+        class_id.appendChild(opt);
+      });
+      class_id.value = selectedClassId;
     });
-    class_id.value = classId;
-  });
 }
 
-/* ================= LOAD STUDENT ROW ================= */
+/* ================= LOAD STUDENT ================= */
 function loadStudentRow(a) {
 
   tableBody.innerHTML = `
@@ -168,18 +181,19 @@ function loadStudentRow(a) {
     </tr>
   `;
 
-  // load student name
   fetch(`http://localhost:3000/attendance/class/${a.class_id}/students`)
-  .then(res => res.json())
-  .then(data => {
-    const s = data.find(x => x.student_id === a.student_id);
-    document.getElementById("studentName").textContent =
-      s ? s.student_name : "Unknown Student";
+    .then(res => res.json())
+    .then(data => {
 
-    document.querySelector(
-      `input[value="${a.attend_status}"]`
-    ).checked = true;
-  });
+      const s = data.find(x => x.student_id === a.student_id);
+      document.getElementById("studentName").textContent =
+        s ? s.student_name : "Unknown Student";
+
+      document.querySelector(
+        `input[value="${a.attend_status}"]`
+      ).checked = true;
+
+    });
 }
 
 /* ================= UPDATE ================= */

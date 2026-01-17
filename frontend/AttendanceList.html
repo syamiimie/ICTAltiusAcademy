@@ -13,6 +13,7 @@
 
 <body>
 
+<!-- ================= TOP BAR ================= -->
 <header class="topbar">
   <div class="top-left">
     <button class="menu-btn" id="menuBtn">☰</button>
@@ -33,6 +34,7 @@
 
 <div class="layout">
 
+<!-- ================= SIDEBAR ================= -->
 <aside class="sidebar" id="sidebar">
   <nav class="menu">
     <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
@@ -41,11 +43,14 @@
     <a href="EnrollmentList.html"><i class="fa-solid fa-file-signature"></i><span>Enrollment</span></a>
     <a href="PackageList.html"><i class="fa-solid fa-box"></i><span>Package</span></a>
     <a href="SubjectList.html"><i class="fa-solid fa-book"></i><span>Subject</span></a>
-    <a href="AttendanceList.html" class="active"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a>
+    <a href="AttendanceList.html" class="active">
+      <i class="fa-solid fa-calendar-check"></i><span>Attendance</span>
+    </a>
     <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
   </nav>
 </aside>
 
+<!-- ================= MAIN ================= -->
 <main class="main">
 
   <div class="page-header">
@@ -65,55 +70,87 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody id="attendanceTable"></tbody>
+      <tbody id="attendanceTable">
+        <tr>
+          <td colspan="6">Loading...</td>
+        </tr>
+      </tbody>
     </table>
   </div>
 
 </main>
 </div>
 
+<!-- ================= SCRIPT ================= -->
 <script>
 const sidebar = document.getElementById("sidebar");
+const menuBtn = document.getElementById("menuBtn");
+const attendanceTable = document.getElementById("attendanceTable");
+
 menuBtn.onclick = () => sidebar.classList.toggle("collapsed");
 
 function toggleUserMenu(){
   const m = document.getElementById("userDropdown");
   m.style.display = m.style.display === "block" ? "none" : "block";
 }
+
 document.addEventListener("click", e => {
   if (!e.target.closest(".top-right")) {
-    userDropdown.style.display = "none";
+    document.getElementById("userDropdown").style.display = "none";
   }
 });
+
 function logout(){
   localStorage.removeItem("staff");
   location.href = "login.html";
 }
 
-/* 🔥 FIXED FIELD NAMES */
+/* ================= LOAD ATTENDANCE LIST ================= */
 fetch("http://localhost:3000/attendance")
-.then(r => r.json())
-.then(data => {
-  attendanceTable.innerHTML = "";
-  data.forEach(a => {
-    attendanceTable.innerHTML += `
+  .then(r => r.json())
+  .then(data => {
+
+    attendanceTable.innerHTML = "";
+
+    if (!Array.isArray(data) || data.length === 0) {
+      attendanceTable.innerHTML = `
+        <tr>
+          <td colspan="6">No attendance record found</td>
+        </tr>`;
+      return;
+    }
+
+    data.forEach(a => {
+      attendanceTable.innerHTML += `
+        <tr>
+          <td>${a.attend_id}</td>
+          <td>${a.attend_date}</td>
+          <td>${a.attend_status}</td>
+          <td>${a.student_name}</td>
+          <td>${a.class_id} - ${a.class_name}</td>
+          <td class="action-cell">
+            <a href="AttendanceEdit.html?id=${a.attend_id}" class="button">Edit</a>
+            <button class="button delete" onclick="del(${a.attend_id})">
+              Delete
+            </button>
+          </td>
+        </tr>`;
+    });
+  })
+  .catch(err => {
+    console.error(err);
+    attendanceTable.innerHTML = `
       <tr>
-        <td>${a.attend_id}</td>
-        <td>${a.attend_date}</td>
-        <td>${a.attend_status}</td>
-        <td>${a.student_name}</td>
-        <td>${a.class_name}</td>
-        <td class="action-cell">
-          <a href="AttendanceEdit.html?id=${a.attend_id}" class="button">Edit</a>
-          <button class="button delete" onclick="del(${a.attend_id})">Delete</button>
-        </td>
+        <td colspan="6">Failed to load attendance</td>
       </tr>`;
   });
-});
 
+/* ================= DELETE ================= */
 function del(id){
   if(confirm("Delete attendance?")){
-    fetch(`http://localhost:3000/attendance/${id}`, { method:"DELETE" })
+    fetch(`http://localhost:3000/attendance/${id}`, {
+      method: "DELETE"
+    })
     .then(() => location.reload());
   }
 }

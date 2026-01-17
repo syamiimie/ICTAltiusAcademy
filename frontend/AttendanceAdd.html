@@ -5,18 +5,15 @@
   <title>Altius Academy | Add Attendance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Icons -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- CSS -->
   <link rel="stylesheet" href="layout.css">
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<!-- ================= TOP BAR ================= -->
+<!-- TOP BAR -->
 <header class="topbar">
   <div class="top-left">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -25,7 +22,6 @@
       <span>Altius Academy</span>
     </a>
   </div>
-
   <div class="top-right">
     <div class="user-btn" onclick="toggleUserMenu()">Staff ▾</div>
     <div class="user-dropdown" id="userDropdown">
@@ -37,7 +33,7 @@
 
 <div class="layout">
 
-<!-- ================= SIDEBAR ================= -->
+<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <nav class="menu">
     <a href="TeacherList.html"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
@@ -49,23 +45,19 @@
     <a href="AttendanceList.html" class="active">
       <i class="fa-solid fa-calendar-check"></i><span>Attendance</span>
     </a>
-    <a href="Report.html"><i class="fa-solid fa-chart-line"></i><span>Report</span></a>
   </nav>
 </aside>
 
-<!-- ================= MAIN ================= -->
+<!-- MAIN -->
 <main class="main">
-
 <div class="form-page">
 <div class="form-card">
 
-  <!-- HEADER -->
   <div class="form-header">
     <h2>Add Attendance</h2>
     <p>Select class and mark student attendance</p>
   </div>
 
-  <!-- FORM TOP -->
   <div class="form-grid">
     <div class="form-row">
       <label>Date</label>
@@ -74,13 +66,12 @@
 
     <div class="form-row">
       <label>Class</label>
-      <select id="class_id" required>
+      <select id="classSelect">
         <option value="">-- Select Class --</option>
       </select>
     </div>
   </div>
 
-  <!-- STUDENT TABLE -->
   <div class="attendance-table-wrapper">
     <table class="attendance-table">
       <thead>
@@ -91,85 +82,66 @@
         </tr>
       </thead>
       <tbody id="studentTable">
-        <tr>
-          <td colspan="3" class="empty-state">
-            Select class to load students
-          </td>
-        </tr>
+        <tr><td colspan="3">Select class to load students</td></tr>
       </tbody>
     </table>
   </div>
 
-  <!-- ACTIONS -->
   <div class="form-actions">
-    <button class="button" type="button" onclick="saveAttendance()">
-      Save
-    </button>
+    <button class="button" onclick="saveAttendance()">Save</button>
     <a href="AttendanceList.html" class="button secondary">Cancel</a>
   </div>
 
 </div>
 </div>
-
 </main>
 </div>
 
-<!-- ================= SCRIPT ================= -->
 <script>
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("collapsed");
 }
-
 function toggleUserMenu() {
   const m = document.getElementById("userDropdown");
   m.style.display = m.style.display === "block" ? "none" : "block";
 }
-
 function logout() {
   localStorage.removeItem("staff");
   location.href = "login.html";
 }
 
-const classSelect = document.getElementById("class_id");
+const classSelect = document.getElementById("classSelect");
 const tableBody = document.getElementById("studentTable");
 
-/* LOAD CLASSES */
+let SELECTED_CLASS_ID = null;
+
+/* LOAD CLASSES (REAL CLASS_ID Cxx) */
 fetch("http://localhost:3000/classes")
   .then(res => res.json())
   .then(data => {
+    classSelect.innerHTML = `<option value="">-- Select Class --</option>`;
     data.forEach(c => {
       const opt = document.createElement("option");
-      opt.value = c.CLASS_ID;
-      opt.textContent = c.CLASS_NAME;
+      opt.value = c.CLASS_ID;                  // 🔥 "C01"
+      opt.textContent = `${c.CLASS_ID} - ${c.CLASS_NAME}`;
       classSelect.appendChild(opt);
     });
   });
 
 /* LOAD STUDENTS */
 classSelect.addEventListener("change", () => {
+  SELECTED_CLASS_ID = classSelect.value;       // 🔥 STRING
 
-  if (!classSelect.value) {
-    tableBody.innerHTML = `
-      <tr>
-        <td colspan="3" class="empty-state">Please select class</td>
-      </tr>`;
+  if (!SELECTED_CLASS_ID) {
+    tableBody.innerHTML = `<tr><td colspan="3">Select class to load students</td></tr>`;
     return;
   }
 
   tableBody.innerHTML = "";
 
-  fetch(`http://localhost:3000/attendance/class/${classSelect.value}/students`)
+  fetch(`http://localhost:3000/attendance/class/${SELECTED_CLASS_ID}/students`)
     .then(res => res.json())
     .then(data => {
-
-      if (!Array.isArray(data) || data.length === 0) {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="3" class="empty-state">No students enrolled</td>
-          </tr>`;
-        return;
-      }
-
       data.forEach(s => {
         tableBody.innerHTML += `
           <tr>
@@ -187,11 +159,8 @@ classSelect.addEventListener("change", () => {
 
 /* SAVE ATTENDANCE */
 function saveAttendance() {
-
-  const date = document.getElementById("attend_date").value;
-
-  if (!date || !classSelect.value) {
-    alert("Please select date and class");
+  if (!SELECTED_CLASS_ID) {
+    alert("Please select class");
     return;
   }
 
@@ -204,15 +173,20 @@ function saveAttendance() {
       });
     });
 
+  const payload = {
+    attend_date: document.getElementById("attend_date").value,
+    class_id: SELECTED_CLASS_ID,   // 🔥 "C01"
+    records
+  };
+
+  console.log("🔥 FINAL PAYLOAD:", payload);
+
   fetch("http://localhost:3000/attendance/bulk", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      attend_date: date,
-      class_id: Number(classSelect.value),
-      records
-    })
+    body: JSON.stringify(payload)
   })
+  .then(res => res.json())
   .then(() => {
     alert("Attendance saved successfully");
     location.href = "AttendanceList.html";
