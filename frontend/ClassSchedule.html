@@ -152,13 +152,23 @@ function getRandomColor() {
   return `hsl(${hue}, 70%, 60%)`;
 }
 
+function timeToMinutes(t){
+  const [time, modifier] = t.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+
+  if (modifier === "PM" && hours !== 12) hours += 12;
+  if (modifier === "AM" && hours === 12) hours = 0;
+
+  return hours * 60 + minutes;
+}
+
 /* ================= LOAD SCHEDULE ================= */
 fetch("http://localhost:3000/classes/schedule")
   .then(res => res.json())
   .then(data => {
 
     const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-    const times = [...new Set(data.map(c => c.CLASS_TIME))].sort();
+    const times = [...new Set(data.map(c => c.CLASS_TIME))].sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
 
     const tbody = document.getElementById("timetableBody");
     tbody.innerHTML = "";
