@@ -107,42 +107,52 @@ exports.addEnrollment = async (req, res) => {
       );
     }
 
-    /* 3️⃣ Check if package is Advanced */
-    const advCheck = await conn.execute(
+    /* 3️⃣ Get package details (level + subject) */
+    const pkgInfo = await conn.execute(
       `
-      SELECT COUNT(*) AS CNT
+      SELECT PACKAGE_NAME
       FROM ALTIUS_DB.Package
       WHERE Package_ID = :Package_ID
-        AND Package_Name LIKE 'Advanced%'
       `,
       { Package_ID }
     );
 
-    const isAdvanced = advCheck.rows[0].CNT > 0;
+    const packageName = pkgInfo.rows[0].PACKAGE_NAME;
+    const isAdvanced = packageName.startsWith("Advanced");
 
-/* 4️⃣ If Advanced → must have Biology F4 & Biology F5 */
-if (isAdvanced) {
-  const f45Check = await conn.execute(
-    `
-    SELECT COUNT(DISTINCT s.SUBJECT_NAME) AS CNT
-    FROM ALTIUS_DB.Enrollment e
-    JOIN ALTIUS_DB.Subject s
-      ON e.Package_ID = s.Package_ID
-    WHERE e.Student_ID = :Student_ID
-       AND (
-      s.SUBJECT_NAME LIKE '% F4'
-      AND s.SUBJECT_NAME LIKE '% F5'
-    )   
-    `,
-    { Student_ID }
-  );
+    /* Extract subject from package name (e.g. "Advanced Biology") */
+    let advancedSubject = null;
+    if (isAdvanced) {
+      advancedSubject = packageName.replace("Advanced", "").trim();
+    }
 
-  if (f45Check.rows[0].CNT < 2) {
-    return res.status(403).send(
-      "Student must be enrolled in BOTH F4 and F5 Subjects before enrolling in Advanced package"
-    );
-  }
-}
+    /* 4️⃣ If Advanced → must have SAME subject F4 & F5 */
+    if (isAdvanced) {
+      const f45Check = await conn.execute(
+        `
+        SELECT COUNT(DISTINCT s.SUBJECT_NAME) AS CNT
+        FROM ALTIUS_DB.Enrollment e
+        JOIN ALTIUS_DB.Subject s
+          ON e.Package_ID = s.Package_ID
+        WHERE e.Student_ID = :Student_ID
+          AND (
+            s.SUBJECT_NAME = :SUBJECT || ' F4'
+            OR s.SUBJECT_NAME = :SUBJECT || ' F5'
+          )
+        HAVING COUNT(DISTINCT s.SUBJECT_NAME) = 2
+        `,
+        {
+          Student_ID,
+          SUBJECT: advancedSubject
+        }
+      );
+
+      if (f45Check.rows.length === 0) {
+        return res.status(403).send(
+          `Student must be enrolled in BOTH ${advancedSubject} Form 4 and Form 5 before enrolling in Advanced ${advancedSubject}`
+        );
+      }
+    }
 
     /* 5️⃣ Insert enrollment */
     await conn.execute(
@@ -165,6 +175,7 @@ if (isAdvanced) {
     if (conn) await conn.close();
   }
 };
+
 
 /* ================= UPDATE ENROLLMENT ================= */
 exports.updateEnrollment = async (req, res) => {
