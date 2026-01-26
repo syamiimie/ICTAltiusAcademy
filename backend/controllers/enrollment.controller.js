@@ -131,7 +131,7 @@ if (isAdvanced) {
     WHERE e.Student_ID = :Student_ID
        AND (
       s.SUBJECT_NAME LIKE '% F4'
-      OR s.SUBJECT_NAME LIKE '% F5'
+      AND s.SUBJECT_NAME LIKE '% F5'
     )   
     `,
     { Student_ID }
