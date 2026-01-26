@@ -172,7 +172,7 @@ exports.addStudent = async (req, res) => {
         `,
         {
           id: studentId,
-          form: clean(req.body.form) || 1,
+          form: req.body.form ? Number(req.body.form) : 1,
           stream: clean(req.body.stream) || "Science"
         }
       );
@@ -285,7 +285,7 @@ exports.updateStudent = async (req, res) => {
         `,
         {
           id: req.params.id,
-          form: clean(req.body.form) || 1,
+          form: req.body.form ? Number(req.body.form) : 1,
           stream: clean(req.body.stream) || "Science"
         }
       );
