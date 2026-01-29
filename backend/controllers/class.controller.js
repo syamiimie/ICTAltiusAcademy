@@ -50,7 +50,7 @@ exports.getClassById = async (req, res) => {
   }
 };
 
-/* ================= ADD CLASS (WITH / WITHOUT PREREQ) ================= */
+/* ================= ADD CLASS (FIXED) ================= */
 exports.addClass = async (req, res) => {
   let conn;
   const { name, time, day, subject_id, teacher_id, prerequisites = [] } = req.body;
@@ -58,34 +58,31 @@ exports.addClass = async (req, res) => {
   try {
     conn = await oracledb.getConnection(db);
 
-    /* 1️⃣ Insert class (NO CLASS_ID) */
-    await conn.execute(
+    /* 1️⃣ Insert class + get CLASS_ID safely */
+    const result = await conn.execute(
       `
       INSERT INTO ALTIUS_DB.CLASS (
-        CLASS_NAME, CLASS_TIME, CLASS_DAY, SUBJECT_ID, TEACHER_ID
+        CLASS_ID, CLASS_NAME, CLASS_TIME, CLASS_DAY, SUBJECT_ID, TEACHER_ID
       )
       VALUES (
+        'C' || ALTIUS_DB.CLASS_SEQ.NEXTVAL,
         :name, :time, :day, :subject_id, :teacher_id
       )
+      RETURNING CLASS_ID INTO :classId
       `,
-      { name, time, day, subject_id, teacher_id }
+      {
+        name,
+        time,
+        day,
+        subject_id,
+        teacher_id,
+        classId: { dir: oracledb.BIND_OUT, type: oracledb.STRING }
+      }
     );
 
-    /* 2️⃣ Get generated CLASS_ID */
-    const idResult = await conn.execute(
-      `
-      SELECT CLASS_ID
-      FROM ALTIUS_DB.CLASS
-      WHERE ROWID = (
-        SELECT MAX(ROWID)
-        FROM ALTIUS_DB.CLASS
-      )
-      `
-    );
+    const classId = result.outBinds.classId[0];
 
-    const classId = idResult.rows[0].CLASS_ID;
-
-    /* 3️⃣ Insert prerequisites */
+    /* 2️⃣ Insert prerequisites */
     for (let prereqId of prerequisites) {
       if (prereqId === classId)
         throw new Error("Class cannot be its own prerequisite");
@@ -120,6 +117,7 @@ exports.addClass = async (req, res) => {
     if (conn) await conn.close();
   }
 };
+
 
 /* ================= ADD PREREQUISITE TO EXISTING CLASS ================= */
 exports.addPrerequisite = async (req, res) => {
